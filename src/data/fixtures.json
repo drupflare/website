@@ -1,0 +1,874 @@
+{
+	"generated": "2026-09-28",
+	"modules": [
+		{
+			"name": "address",
+			"package": "drupal/address",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `address`, `address_country` and `address_zone` field types are registered and `address.country_repository`, `address.address_format_repository` and `address.subdivision_repository` resolve. None of the three is in the container beforehand.",
+			"shipping": false
+		},
+		{
+			"name": "admin_toolbar",
+			"package": "drupal/admin_toolbar",
+			"state": "verified",
+			"verified": "Enabled against a real site in the workers lane; its own routes appear in the `router` table after the install-triggered rebuild.",
+			"shipping": true
+		},
+		{
+			"name": "backup_migrate",
+			"package": "drupal/backup_migrate",
+			"state": "verified",
+			"verified": "Enabled against a real site; it installed four config entity types and six default source and destination entities -- `default_db`, `entire_site`, the two file destinations and a daily schedule -- and 24 routes.",
+			"shipping": false
+		},
+		{
+			"name": "better_exposed_filters",
+			"package": "drupal/better_exposed_filters",
+			"state": "verified",
+			"verified": "Enabled against a real site; its three widget plugin managers and `better_exposed_filters.bef_helper` are in the container afterwards and absent before.",
+			"shipping": false
+		},
+		{
+			"name": "captcha",
+			"package": "drupal/captcha",
+			"state": "verified",
+			"verified": "Enabled against a real site; its schema hook created `captcha_sessions` and 8 routes appear in the `router` table. Its routes are named with underscores, so a dotted module-prefix match finds none of them.",
+			"shipping": false
+		},
+		{
+			"name": "coffee",
+			"package": "drupal/coffee",
+			"state": "verified",
+			"verified": "Enabled against a real site; `coffee.url_generator` resolves and `coffee.configuration` is installed, which is the config its command palette reads.",
+			"shipping": false
+		},
+		{
+			"name": "colorbox",
+			"package": "drupal/colorbox",
+			"state": "verified",
+			"verified": "Enabled against a real site; `colorbox.settings` is installed and its admin route is in the `router` table.",
+			"shipping": false
+		},
+		{
+			"name": "config_ignore",
+			"package": "drupal/config_ignore",
+			"state": "verified",
+			"verified": "Enabled against a real site; `config_ignore.settings` is installed and its admin route is in the `router` table.",
+			"shipping": false
+		},
+		{
+			"name": "crop",
+			"package": "drupal/crop",
+			"state": "verified",
+			"verified": "Enabled against a real site; it created the crop entity type as four tables -- `crop`, `crop_field_data`, `crop_revision`, `crop_field_revision` -- and installed `crop_type` as a config entity type.",
+			"shipping": false
+		},
+		{
+			"name": "csv_serialization",
+			"package": "drupal/csv_serialization",
+			"state": "verified",
+			"verified": "Enabled against a real site; `serializer->supportsEncoding('csv')` is true afterwards and false before, with `json` true throughout as the control that the serializer is answering at all.",
+			"shipping": false
+		},
+		{
+			"name": "ctools",
+			"package": "drupal/ctools",
+			"state": "verified",
+			"verified": "Enabled against a real site in the workers lane; `core.extension` grew and the site still saved content afterwards. A library module with no user-visible behaviour of its own, so this is the strongest observable it has.",
+			"shipping": true
+		},
+		{
+			"name": "devel",
+			"package": "drupal/devel",
+			"state": "verified",
+			"verified": "Enabled against a real site; `devel.dumper` and `plugin.manager.devel_dumper` resolve, its route and error subscribers are in the container, and it installs its own menu.",
+			"shipping": false
+		},
+		{
+			"name": "easy_breadcrumb",
+			"package": "drupal/easy_breadcrumb",
+			"state": "verified",
+			"verified": "Enabled against a real site; `easy_breadcrumb.settings` is installed and its admin route is in the `router` table.",
+			"shipping": false
+		},
+		{
+			"name": "editor_advanced_link",
+			"package": "drupal/editor_advanced_link",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `editor_advanced_link_link` CKEditor 5 plugin is registered and its two asset libraries resolve. Library discovery needs `common.inc` loaded first -- `JS_LIBRARY` and `CSS_COMPONENT` are defined there, not by the autoloader.",
+			"shipping": false
+		},
+		{
+			"name": "entity",
+			"package": "drupal/entity",
+			"state": "verified",
+			"verified": "Enabled against a real site; `entity.bundle_plugin_installer`, `entity.bundle_entity_duplicator` and `access_checker.entity_revision` resolve afterwards and are absent before. A substring match on its name is NOT evidence here: most of what matches `entity` in the container is core.",
+			"shipping": false
+		},
+		{
+			"name": "entity_browser",
+			"package": "drupal/entity_browser",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `entity_browser` config entity type is installed and six of its routes are in the `router` table.",
+			"shipping": false
+		},
+		{
+			"name": "entity_reference_revisions",
+			"package": "drupal/entity_reference_revisions",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `entity_reference_revisions` field type and its `entity_reference_revisions_entity_view` formatter are registered, and `entity_reference_revisions.orphan_purger` is in the container.",
+			"shipping": false
+		},
+		{
+			"name": "externalauth",
+			"package": "drupal/externalauth",
+			"state": "verified",
+			"verified": "Enabled against a real site; its schema hook created `authmap`, which is the table the identity mapping lives in.",
+			"shipping": false
+		},
+		{
+			"name": "facets",
+			"package": "drupal/facets",
+			"state": "verified",
+			"verified": "Enabled against a real site; all five of its plugin managers resolve. It creates no table and ships no config, so the container IS the observable.",
+			"shipping": false
+		},
+		{
+			"name": "field_group",
+			"package": "drupal/field_group",
+			"state": "verified",
+			"verified": "Enabled against a real site; it creates no table and ships no settings, so what was asserted is what it adds to the CONTAINER -- `plugin.manager.field_group.formatters`, `field_group.subscriber` and `field_group.param_converter` all resolve after the install, with a core service as the control.",
+			"shipping": false
+		},
+		{
+			"name": "filefield_sources",
+			"package": "drupal/filefield_sources",
+			"state": "verified",
+			"verified": "Enabled against a real site; `plugin.manager.filefield_sources`, its field access check and its own service all resolve. Ships no stable release, so this is the 2.0 development branch and the row says so.",
+			"shipping": false
+		},
+		{
+			"name": "focal_point",
+			"package": "drupal/focal_point",
+			"state": "verified",
+			"verified": "Enabled against a real site; `focal_point.settings` is installed and it created the `crop.type.focal_point` crop type inside the dependency it pulled in.",
+			"shipping": false
+		},
+		{
+			"name": "google_analytics",
+			"package": "drupal/google_analytics",
+			"state": "verified",
+			"verified": "Enabled against a real site; `google_analytics.visibility`, `.accounts` and `.javascript_cache` resolve and `google_analytics.settings` is installed. The tag it emits is client-side, so nothing outbound is involved.",
+			"shipping": false
+		},
+		{
+			"name": "google_tag",
+			"package": "drupal/google_tag",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `google_tag_container` config entity type and `google_tag.settings` are installed, with eight routes. Nothing outbound happens in PHP -- the snippet it injects is called by the browser.",
+			"shipping": false
+		},
+		{
+			"name": "honeypot",
+			"package": "drupal/honeypot",
+			"state": "verified",
+			"verified": "Enabled against a real site; its schema hook created `honeypot_user`. The recommended default over any captcha here, because a hidden field and a submission timer are entirely local and cost no outbound round trip.",
+			"shipping": false
+		},
+		{
+			"name": "imageapi_optimize",
+			"package": "drupal/imageapi_optimize",
+			"state": "verified",
+			"verified": "Enabled against a real site; its processor plugin manager resolves, `imageapi_optimize.settings` is installed and the pipeline config entity type is registered. The BINARY pipelines shell out and cannot run here; the pipeline plugin point is what was verified.",
+			"shipping": false
+		},
+		{
+			"name": "imce",
+			"package": "drupal/imce",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `imce_profile` config entity type and both shipped profiles -- `admin` and `member` -- are installed, with nine routes.",
+			"shipping": false
+		},
+		{
+			"name": "jquery_ui",
+			"package": "drupal/jquery_ui",
+			"state": "verified",
+			"verified": "Enabled against a real site; 24 asset libraries resolve for it afterwards and none before, `core` and `widget` among them.",
+			"shipping": false
+		},
+		{
+			"name": "jquery_ui_autocomplete",
+			"package": "drupal/jquery_ui_autocomplete",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `autocomplete` library resolves for it afterwards and none before. It ships no code of its own -- jquery_ui declares the library on its behalf, so the library existing IS the module working.",
+			"shipping": false
+		},
+		{
+			"name": "jquery_ui_datepicker",
+			"package": "drupal/jquery_ui_datepicker",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `datepicker` library resolves for it afterwards and none before. Four files on disk and no PHP, so its library is the only observable it has.",
+			"shipping": false
+		},
+		{
+			"name": "jquery_ui_menu",
+			"package": "drupal/jquery_ui_menu",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `menu` library resolves for it afterwards and none before.",
+			"shipping": false
+		},
+		{
+			"name": "json_field",
+			"package": "drupal/json_field",
+			"state": "verified",
+			"verified": "Enabled against a real site; it registers the `json` field type with core's field-type manager and its `json_field.views` service resolves. Its normalizer is a TAGGED service, which the compiler folds into the serializer and removes from the public map, so asking the container for it by id fails on a module that installed correctly.",
+			"shipping": false
+		},
+		{
+			"name": "key",
+			"package": "drupal/key",
+			"state": "verified",
+			"verified": "Enabled against a real site; its repository and three plugin managers resolve and the `key` config entity type is registered. A key PROVIDER that reads a file or an external service is a separate question.",
+			"shipping": false
+		},
+		{
+			"name": "libraries",
+			"package": "drupal/libraries",
+			"state": "verified",
+			"verified": "Enabled against a real site; `libraries.settings` is installed, which is where its external library definitions are read from.",
+			"shipping": false
+		},
+		{
+			"name": "linkit",
+			"package": "drupal/linkit",
+			"state": "verified",
+			"verified": "Enabled against a real site; its matcher and substitution managers resolve alongside the suggestion manager, and `linkit_profile` is registered.",
+			"shipping": false
+		},
+		{
+			"name": "mailsystem",
+			"package": "drupal/mailsystem",
+			"state": "verified",
+			"verified": "Enabled against a real site; `mailsystem.settings` is installed and its admin route is in the `router` table. It is how a site selects `cfw_mail`, so it is the module a site drops smtp in favour of.",
+			"shipping": false
+		},
+		{
+			"name": "menu_block",
+			"package": "drupal/menu_block",
+			"state": "verified",
+			"verified": "Enabled against a real site; `menu_block:main` and `menu_block:footer` are block plugin derivatives it provides. `access_check.admin_menu_block_page` reads as its service and is CORE's -- the before reading is what said so.",
+			"shipping": false
+		},
+		{
+			"name": "metatag",
+			"package": "drupal/metatag",
+			"state": "verified",
+			"verified": "Enabled against a real site; it installed 8 config objects of its own, so it has defaults to apply rather than enabling inert the way pathauto does.",
+			"shipping": false
+		},
+		{
+			"name": "metatag_search_gov",
+			"package": "drupal/metatag_search_gov",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `search_gov` metatag group and the `searchgov_custom1` and `searchgov_custom3` tag plugins name this module afterwards and are absent before. It installs no config, creates no table and registers no route of its own, so the plugin definitions are the whole observable.",
+			"shipping": false
+		},
+		{
+			"name": "migrate_plus",
+			"package": "drupal/migrate_plus",
+			"state": "verified",
+			"verified": "Enabled against a real site; both config entity types it exists to provide are installed -- `migration.entity_type` and `migration_group.entity_type`. It ships no config OBJECTS, so a `migrate_plus.%` config probe finds nothing and would read as inert.",
+			"shipping": false
+		},
+		{
+			"name": "module_filter",
+			"package": "drupal/module_filter",
+			"state": "verified",
+			"verified": "Enabled against a real site; `module_filter.settings` is installed and its admin route is in the `router` table.",
+			"shipping": false
+		},
+		{
+			"name": "openid_connect",
+			"package": "drupal/openid_connect",
+			"state": "verified",
+			"verified": "Enabled against a real site; `plugin.manager.openid_connect_client`, `openid_connect.claims` and `openid_connect.state_token` resolve, the `generic` client plugin and the `openid_connect_client` entity type are registered and thirteen of its routes are in the `router` table, none of it before. Its OWN client then completed a login: a real authorization code from the rig Keycloak, exchanged by `OpenIDConnectClientBase::retrieveTokens()` inside the callback request and followed by its userinfo GET, after which `externalauth` wrote `openid_connect.keycloak` into `authmap` against the id_token's `sub` and opened a session for the account it created. Both outbound calls went through the Zend park, so each was performed in JavaScript while PHP was frozen mid-call. The control is the same run on the interpreter before `park_flatten()`: the deferred transport answered `is not in the fetch cache`, no row and no account.",
+			"shipping": false
+		},
+		{
+			"name": "paragraphs",
+			"package": "drupal/paragraphs",
+			"state": "verified",
+			"verified": "Enabled against a real site; it created its entity type as four tables -- `paragraphs_item`, `paragraphs_item_field_data`, `paragraphs_item_revision`, `paragraphs_item_revision_field_data`.",
+			"shipping": false
+		},
+		{
+			"name": "pathauto",
+			"package": "drupal/pathauto",
+			"state": "verified",
+			"verified": "Enabled against a real site, given the pattern the shipped database does not carry; a node saved as \"Pathauto Probe Title\" produced the `path_alias` row `/node/1 -> /probe/pathauto-probe-title`. Pointed at `canonical_entities:user` the same run writes no row, so the assertion tracks this pattern rather than an ambient alias.",
+			"shipping": true
+		},
+		{
+			"name": "purge",
+			"package": "drupal/purge",
+			"state": "verified",
+			"verified": "Enabled against a real site; `purge.queue`, `purge.processors`, `purge.purgers` and the invalidation factory all resolve. What it would PURGE is this host, which already invalidates from cache tags.",
+			"shipping": false
+		},
+		{
+			"name": "queue_ui",
+			"package": "drupal/queue_ui",
+			"state": "verified",
+			"verified": "Enabled against a real site; its admin routes are in the `router` table, and routes are the whole module.",
+			"shipping": false
+		},
+		{
+			"name": "recaptcha",
+			"package": "drupal/recaptcha",
+			"state": "verified",
+			"verified": "Enabled against a real site; captcha came with it, so dependency resolution ran, and it installed its own configuration.",
+			"shipping": false
+		},
+		{
+			"name": "redirect",
+			"package": "drupal/redirect",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `redirect` table exists and 11 of its routes are in the `router` table, so both halves of a route subscriber over its own table are present.",
+			"shipping": false
+		},
+		{
+			"name": "redis",
+			"package": "drupal/redis",
+			"state": "verified",
+			"verified": "Enabled against a real site; `cache.backend.redis`, `redis.factory`, `redis.lock.factory`, `redis.flood.factory` and `queue.redis` all resolve afterwards and none before. It ships no config and creates no table, so the container IS the observable -- the same shape as facets. Its socket is answered by the Zend park: `park-interpreter.spec.ts` drives PHP through an open, two writes and two reads against the rig Redis and gets `+OK|+PONG` back, five parks each performed in JavaScript on a later invocation. The Durable Object own SQLite is still the faster cache backend and the recommended one, because a parked get is a network round trip where SQLite is a local read.",
+			"shipping": false
+		},
+		{
+			"name": "scheduler",
+			"package": "drupal/scheduler",
+			"state": "verified",
+			"verified": "Enabled against a real site; it installed its own configuration and its routes are in the `router` table.",
+			"shipping": false
+		},
+		{
+			"name": "search_api",
+			"package": "drupal/search_api",
+			"state": "verified",
+			"verified": "Enabled against a real site; it created `search_api_item` and `search_api_task`, which is where the database backend writes, and its index routes are in the `router` table.",
+			"shipping": false
+		},
+		{
+			"name": "search_api_solr",
+			"package": "drupal/search_api_solr",
+			"state": "verified",
+			"verified": "Enabled against a real site with composer's platform check ON; `plugin.manager.search_api_solr.connector` and `solarium.query_helper` resolve and all four solr config entity types -- `solr_cache`, `solr_field_type`, `solr_request_handler`, `solr_request_dispatcher` -- are registered, none of them before. The `php-64bit` constraint that used to abort every request before Drupal booted is satisfied by the long64 build. A Solr SERVER is still an outbound dependency reached through the deferred tier, so what was asserted is the module installing rather than a query answering.",
+			"shipping": false
+		},
+		{
+			"name": "search_gov_results_api",
+			"package": "drupal/search_gov_results_api",
+			"state": "untested",
+			"verified": null,
+			"shipping": false
+		},
+		{
+			"name": "simple_sitemap",
+			"package": "drupal/simple_sitemap",
+			"state": "verified",
+			"verified": "Enabled against a real site; `simple_sitemap.generator`, `simple_sitemap.queue_worker` and `simple_sitemap.sitemap_writer` resolve, both `simple_sitemap` and `simple_sitemap_type` are registered entity types and `simple_sitemap.settings` is installed, none of it before. It was refused outright until the host supplied a pure-PHP `XMLWriter` and cleared its one install block through `hook_requirements_alter()` -- `extension_loaded('xmlwriter')` is a built-in and cannot be shimmed.",
+			"shipping": false
+		},
+		{
+			"name": "smtp",
+			"package": "drupal/smtp",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `SMTPMailSystem` mail plugin is in `plugin.manager.mail` afterwards and absent before, `smtp.settings` is installed and `smtp.config` and `smtp.connection_tester` resolve. Its socket never runs: `CfwMail` passes `smtp.settings` to the host transport, so the module supplies the configuration and the relay is dialled from JS between invocations.",
+			"shipping": false
+		},
+		{
+			"name": "stage_file_proxy",
+			"package": "drupal/stage_file_proxy",
+			"state": "verified",
+			"verified": "Enabled against a real site; `stage_file_proxy.settings` is installed, which is what its fetch path reads.",
+			"shipping": false
+		},
+		{
+			"name": "svg_image",
+			"package": "drupal/svg_image",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `image` field formatter is `Drupal\\svg_image\\...\\SvgImageFormatter` afterwards and core's `ImageFormatter` before, and the `image_image` widget moves the same way. It takes core's plugin ids over rather than adding its own.",
+			"shipping": false
+		},
+		{
+			"name": "token",
+			"package": "drupal/token",
+			"state": "verified",
+			"verified": "Enabled against a real site; `[random:hash:md5]` resolves to 32 hex digits, and it is declared by `token.tokens.inc` and by nothing in core -- with `ctools` enabled in its place the same call returns the literal. Controls both ways: `[nosuchtype:nosuchtoken]` comes back untouched, and core's `[site:name]` still answers.",
+			"shipping": true
+		},
+		{
+			"name": "twig_tweak",
+			"package": "drupal/twig_tweak",
+			"state": "verified",
+			"verified": "Enabled against a real site; its twig extension and four view builders resolve, which is the whole of what it adds.",
+			"shipping": false
+		},
+		{
+			"name": "usfedgov_google_analytics",
+			"package": "drupal/usfedgov_google_analytics",
+			"state": "verified",
+			"verified": "Enabled against a real site; its three hook services resolve, `usfedgov_google_analytics.settings` is installed, its admin route is in the `router` table and seven asset libraries resolve for it afterwards and none before. The DAP tag is fetched by the BROWSER from dap.digitalgov.gov, so nothing outbound happens in PHP.",
+			"shipping": false
+		},
+		{
+			"name": "uswds_base",
+			"package": "drupal/uswds_base",
+			"state": "verified",
+			"verified": "Installed against a real site through `theme_installer`, which is a different installer from every other row here: its asset libraries resolve afterwards and none before, and it lands in the `theme` key of `core.extension` rather than the `module` key. Its default library mode loads USWDS from a CDN, and a federal deployment picks the local mode instead.",
+			"shipping": false
+		},
+		{
+			"name": "video_embed_field",
+			"package": "drupal/video_embed_field",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `video_embed_field` field type, its `video_embed_field_video` formatter and `video_embed_field.provider_manager` are all present afterwards and absent before.",
+			"shipping": false
+		},
+		{
+			"name": "views_bulk_operations",
+			"package": "drupal/views_bulk_operations",
+			"state": "verified",
+			"verified": "Enabled against a real site; `views_bulk_operations.processor`, `views_bulk_operations.data` and its action plugin manager resolve, the `views_bulk_operations_delete_entity` action is registered, and four of its routes are in the `router` table.",
+			"shipping": false
+		},
+		{
+			"name": "views_data_export",
+			"package": "drupal/views_data_export",
+			"state": "verified",
+			"verified": "Enabled against a real site; the `data_export` views display and style plugins are registered, which is the whole module.",
+			"shipping": false
+		},
+		{
+			"name": "webform",
+			"package": "drupal/webform",
+			"state": "verified",
+			"verified": "Enabled against a real site; four of its plugin managers resolve, the `webform` table exists and its shipped option sets are installed. Submissions are ordinary form POSTs.",
+			"shipping": false
+		},
+		{
+			"name": "xmlsitemap",
+			"package": "drupal/xmlsitemap",
+			"state": "verified",
+			"verified": "Enabled against a real site; `xmlsitemap_generator` and `xmlsitemap.link_storage` resolve, the `xmlsitemap` table exists and its settings are installed.",
+			"shipping": false
+		}
+	],
+	"fixtures": [
+		{
+			"id": "webcms",
+			"repo": "https://github.com/USEPA/webcms",
+			"name": "USEPA/webcms",
+			"sha": "0d7d615044ca2352bb7393b9089badf6793f0bc5",
+			"shape": "project",
+			"core": "10.6.15",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "farmos",
+			"repo": "https://github.com/farmOS/farmOS",
+			"name": "farmOS/farmOS",
+			"sha": "41f6e4091dba924a781cee4759bfd2d99bfc00f3",
+			"shape": "profile",
+			"core": "11.4.7",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "open_social",
+			"repo": "https://github.com/goalgorilla/open_social",
+			"name": "goalgorilla/open_social",
+			"sha": "dc52b9ad9779d33933828245002fcf494ea712e4",
+			"shape": "profile",
+			"core": "^10.5.6",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "yusaopeny",
+			"repo": "https://github.com/YCloudYUSA/yusaopeny",
+			"name": "YCloudYUSA/yusaopeny",
+			"sha": "745e87981954f9d8ee857363dd43a406c5c25b84",
+			"shape": "profile",
+			"core": "^11.4",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "thunder",
+			"repo": "https://github.com/thunder/thunder-distribution",
+			"name": "thunder/thunder-distribution",
+			"sha": "50686db3e03c3749588dc9aa7a65cf8cea8b0879",
+			"shape": "profile",
+			"core": "~11.4.0",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "varbase",
+			"repo": "https://github.com/Vardot/varbase",
+			"name": "Vardot/varbase",
+			"sha": "4431d589aabac63f2bacd30b128dcd3bc1002faa",
+			"shape": "profile",
+			"core": "~11.4.0",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "govcms",
+			"repo": "https://github.com/govCMS/GovCMS",
+			"name": "govCMS/GovCMS",
+			"sha": "8fbe9c748e7a441abab5488b7d40dc01fad5d697",
+			"shape": "profile",
+			"core": "11.4.5",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "herbie",
+			"repo": "https://github.com/unlcms/project-herbie",
+			"name": "unlcms/project-herbie",
+			"sha": "06881419e26e5bc2ea5f38fea179359c8e3aef3e",
+			"shape": "project",
+			"core": "^11",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "openculturas",
+			"repo": "https://github.com/openculturas/openculturas-distribution",
+			"name": "openculturas/openculturas-distribution",
+			"sha": "ce2b54b419036fa6aa7cbaf02aa93a3a72d1e331",
+			"shape": "project",
+			"core": "~11.4.8",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "droopler",
+			"repo": "https://github.com/droptica/droopler",
+			"name": "droptica/droopler",
+			"sha": "eb5b3a4f9cf8bfed57dc8404f1934df13967fcdf",
+			"shape": "profile",
+			"core": "^11",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "localgov_microsites",
+			"repo": "https://github.com/localgovdrupal/localgov_microsites_project",
+			"name": "localgovdrupal/localgov_microsites_project",
+			"sha": "4de8403b60f8c9c91d8966a65ff4ebb0537582bc",
+			"shape": "project",
+			"core": "^10.0",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "essex",
+			"repo": "https://github.com/essexcountycouncil/essex-intranet-drupal",
+			"name": "essexcountycouncil/essex-intranet-drupal",
+			"sha": "34f325e784fa72a7485404434f9e806a28b57cef",
+			"shape": "project",
+			"core": "10.3.13",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "atelier",
+			"repo": "https://github.com/aincient-labs/atelier-cms",
+			"name": "aincient-labs/atelier-cms",
+			"sha": "717890c5746733001ae4b423e958673ba6bdfd25",
+			"shape": "project",
+			"core": "^11.4.7",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "openintranet",
+			"repo": "https://github.com/droptica/openintranet",
+			"name": "droptica/openintranet",
+			"sha": "15727c10bb7048e9f7069f396b4515818895179d",
+			"shape": "profile",
+			"core": "~11.3.0",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "islandora",
+			"repo": "https://github.com/Islandora/islandora",
+			"name": "Islandora/islandora",
+			"sha": "a518aea24986d3db9dcf66be340638d0d0637d52",
+			"shape": "suite",
+			"core": "^10 || ^11",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "activity_finder",
+			"repo": "https://github.com/YCloudYUSA/yusaopeny_activity_finder",
+			"name": "YCloudYUSA/yusaopeny_activity_finder",
+			"sha": "68e11f8e3e6522cd07bd02d3f4007b4639d3911c",
+			"shape": "suite",
+			"core": "^10 || ^11",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "ymca360",
+			"repo": "https://github.com/YCloudYUSA/yusaopeny_ymca360",
+			"name": "YCloudYUSA/yusaopeny_ymca360",
+			"sha": "a21e6bf678fa90b301e966d0ed7fe9315c13f6d9",
+			"shape": "suite",
+			"core": "^10 || ^11",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "strawberryfield",
+			"repo": "https://github.com/esmero/strawberryfield",
+			"name": "esmero/strawberryfield",
+			"sha": "95129453b7ad8d422670a1c8723fdea31ad911b0",
+			"shape": "module",
+			"core": "^10.3 || ^11",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "fairwell",
+			"repo": "https://github.com/sealionking/fairwell-drupal",
+			"name": "sealionking/fairwell-drupal",
+			"sha": "f1851b473595987b04bc3b83f45e0ec4408d7e79",
+			"shape": "modules",
+			"core": "^10 || ^11",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "entity_reference_integrity",
+			"repo": "https://github.com/victorstack-ai/drupal-entity-reference-integrity",
+			"name": "victorstack-ai/drupal-entity-reference-integrity",
+			"sha": "147497534a6e95bafb3d872711989a3548a6bc63",
+			"shape": "module",
+			"core": "^10 || ^11",
+			"date": "2026-09-28",
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 1,
+			"unknown": 12,
+			"total": 13,
+			"state": "partial"
+		},
+		{
+			"id": "migration_example",
+			"repo": "https://github.com/jigarius/drupal-migration-example",
+			"name": "jigarius/drupal-migration-example",
+			"sha": "171af0727375ff663da3e4b235e966b7f9e0b1fc",
+			"shape": "module",
+			"core": "8.x",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "simple_oauth_21",
+			"repo": "https://github.com/e0ipso/simple_oauth_21",
+			"name": "e0ipso/simple_oauth_21",
+			"sha": "f2b73148a83c99697e2d7ba7fcd36084fe0f8c40",
+			"shape": "suite",
+			"core": "^11",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "lagoon_cachebackend",
+			"repo": "https://github.com/lagoon-examples/drupal-cachebackend",
+			"name": "lagoon-examples/drupal-cachebackend",
+			"sha": "dc070ad689afcb0b5a055b27788b991c62df7a0e",
+			"shape": "project",
+			"core": "11.3.13",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "fflch",
+			"repo": "https://github.com/fflch/drupal",
+			"name": "fflch/drupal",
+			"sha": "75fc28a784560ba8b044043603870a7d9acc42a2",
+			"shape": "project",
+			"core": "9.1.0",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "drupalx",
+			"repo": "https://github.com/nextagencyio/drupalx-project",
+			"name": "nextagencyio/drupalx-project",
+			"sha": "d665d327d509d26301a79e74383d833692c604c5",
+			"shape": "project",
+			"core": "^11.3.10",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "varbase_patches",
+			"repo": "https://github.com/Vardot/varbase-patches",
+			"name": "Vardot/varbase-patches",
+			"sha": "6f1d782cf857f99f0789fee27dcec9c2ce32f54d",
+			"shape": "composer-plugin",
+			"core": "n/a",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		},
+		{
+			"id": "mantle2",
+			"repo": "https://github.com/earth-app/mantle2",
+			"name": "earth-app/mantle2",
+			"sha": "8d10eff7f825a20b789eb766827dbf8c3490e2e7",
+			"shape": "module",
+			"core": "^11.3",
+			"date": null,
+			"passed": 0,
+			"degraded": 0,
+			"unsupported": 0,
+			"unknown": 0,
+			"total": 0,
+			"state": "pending"
+		}
+	]
+}

@@ -23,8 +23,22 @@ export default defineNuxtConfig({
 		preset: 'static',
 		prerender: {
 			crawlLinks: true,
-			routes: ['/', '/sitemap.xml']
+			routes: [
+				'/',
+				'/why',
+				'/migrate',
+				'/self-managed',
+				'/how-to',
+				'/drangler',
+				'/fixtures',
+				'/about',
+				'/interest',
+				'/sitemap.xml'
+			]
 		}
+	},
+	routeRules: {
+		'/interest': { redirect: 'https://forms.gle/f23bw3DmfZ1w2tin8' }
 	},
 	modules: [
 		'@nuxt/ui',
@@ -36,6 +50,9 @@ export default defineNuxtConfig({
 		'nuxt-schema-org',
 		'@nuxt/hints'
 	],
+	icon: {
+		clientBundle: { scan: true, sizeLimitKb: 256 }
+	},
 	colorMode: {
 		preference: 'dark',
 		fallback: 'dark'
@@ -48,9 +65,17 @@ export default defineNuxtConfig({
 		renderJsonPayloads: true,
 		viewTransition: true
 	},
+	sitemap: {
+		exclude: ['/interest']
+	},
 	schemaOrg: {
 		identity: defineOrganization({
-			name: 'Drupflare'
+			name: 'Drupflare',
+			url: 'https://drupflare.com',
+			logo: '/drupflare.png',
+			description:
+				'Open-source hosting that runs unmodified Drupal on Cloudflare Workers, with no servers to patch.',
+			sameAs: ['https://github.com/drupflare', 'https://www.npmjs.com/package/@drupflare/drangler']
 		})
 	}
 });

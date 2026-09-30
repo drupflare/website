@@ -18,6 +18,19 @@
 	--color-brand-800: #93380f;
 	--color-brand-900: #772f10;
 	--color-brand-950: #401506;
+
+	/* success green, crust's scale (500 pins #1ebb48); a named palette or tailwind drops it */
+	--color-leaf-50: oklch(98.1% 0.005 146.7);
+	--color-leaf-100: oklch(95.5% 0.024 146.7);
+	--color-leaf-200: oklch(91% 0.089 146.7);
+	--color-leaf-300: oklch(85.5% 0.184 146.7);
+	--color-leaf-400: oklch(78% 0.201 146.7);
+	--color-leaf-500: oklch(69.3% 0.199 146.7);
+	--color-leaf-600: oklch(61% 0.165 146.7);
+	--color-leaf-700: oklch(52% 0.128 146.7);
+	--color-leaf-800: oklch(42.5% 0.095 146.7);
+	--color-leaf-900: oklch(33% 0.066 146.7);
+	--color-leaf-950: oklch(22.5% 0.039 146.7);
 }
 
 /* white text needs 700 on light; black text reads on 500 in dark */

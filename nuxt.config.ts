@@ -27,18 +27,18 @@ export default defineNuxtConfig({
 				'/',
 				'/why',
 				'/migrate',
-				'/self-managed',
 				'/how-to',
 				'/drangler',
 				'/fixtures',
-				'/about',
 				'/interest',
 				'/sitemap.xml'
 			]
 		}
 	},
 	routeRules: {
-		'/interest': { redirect: 'https://forms.gle/f23bw3DmfZ1w2tin8' }
+		'/interest': { redirect: 'https://forms.gle/f23bw3DmfZ1w2tin8' },
+		'/about': { redirect: '/#built-by' },
+		'/self-managed': { redirect: '/how-to' }
 	},
 	modules: [
 		'@nuxt/ui',

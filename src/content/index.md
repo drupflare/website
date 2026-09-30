@@ -75,7 +75,7 @@ coming:
 ---
 
 We will run your sites for you: upgrades, backups, a dashboard, and a person to call when something
-breaks. Your site stays ordinary Drupal the whole time, so you can take it with you whenever you
+breaks. :pitch[Your site stays ordinary Drupal the whole time], so you can take it with you whenever you
 like.
 
 Until then, every piece is open source and deploys to your own Cloudflare account today.

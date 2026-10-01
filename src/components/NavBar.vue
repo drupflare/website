@@ -32,6 +32,28 @@
 
 			<div class="ml-auto flex items-center gap-1">
 				<UButton
+					:to="DOCS_URL"
+					target="_blank"
+					rel="noopener noreferrer"
+					color="neutral"
+					variant="ghost"
+					size="sm"
+					icon="i-lucide-book-text"
+					class="max-sm:hidden"
+				>
+					Docs
+				</UButton>
+				<UButton
+					:to="DOCS_URL"
+					target="_blank"
+					rel="noopener noreferrer"
+					color="neutral"
+					variant="ghost"
+					icon="i-lucide-book-text"
+					aria-label="Docs"
+					class="sm:hidden"
+				/>
+				<UButton
 					:to="GITHUB_ORG"
 					target="_blank"
 					rel="noopener noreferrer"
@@ -85,6 +107,19 @@
 						:color="route.path === link.url ? 'primary' : 'neutral'"
 					>
 						{{ link.name }}
+					</UButton>
+					<UButton
+						:to="DOCS_URL"
+						target="_blank"
+						rel="noopener noreferrer"
+						icon="i-lucide-book-text"
+						variant="ghost"
+						color="neutral"
+						size="lg"
+						block
+						class="justify-start"
+					>
+						Docs
 					</UButton>
 					<UButton
 						:to="DEPLOY_URL"

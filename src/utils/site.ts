@@ -7,6 +7,7 @@ export const SITE_TAGLINE = 'Drupal on Cloudflare Workers';
 
 export const GITHUB_ORG = 'https://github.com/drupflare';
 export const WORKER_REPO = 'https://github.com/drupflare/worker';
+export const DOCS_URL = 'https://docs.drupflare.com';
 export const DEMO_URL = 'https://demo.drupflare.com';
 export const DEPLOY_URL =
 	'https://deploy.workers.cloudflare.com/?url=https://github.com/drupflare/worker';

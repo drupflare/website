@@ -50,9 +50,9 @@ drangler health my-site.example                # ok, or warming for the first fe
 `dev` runs the site on your computer and `deploy` uploads the same site to your Cloudflare account.
 `deploy` prints the site's address, such as `https://drupflare.<your-subdomain>.workers.dev`; use it
 wherever this page says `my-site.example`.
-Both share one workspace, so :pitch[what you tried locally is what you deploy]. `--save`
-stores the owner token in your user config, so later commands such as `drangler modify` and
-`drangler site upgrade` find it. Add `--dry-run` to any command to see what it would do without doing it, and `--json` when a script
+Both share one workspace, so :pitch[what you tried locally is what you deploy]. The claim
+stores the owner token in your system keychain, so later commands such as `drangler modify` and
+`drangler site upgrade` find it; `--save` also writes it to your user config. Add `--dry-run` to any command to see what it would do without doing it, and `--json` when a script
 reads the output. The rest of this page explains each step and the options behind it.
 
 ## 🚀 1. Deploy
@@ -103,7 +103,7 @@ curl -X POST "https://my-site.example/firstrun" \
   -d '{"siteName":"My Site","adminMail":"you@example.com"}'
 ```
 
-The response carries `adminPass` and `ownerToken`. :pitch[Each is shown once and stored nowhere you can read it back.] Save both before closing the tab. Pass `"adminPass"` in the body to choose your own
+The response carries `adminPass` and `ownerToken`. Each is shown once. Save both before closing the tab; a lost owner token can be recovered with `drangler recover-token` (see below), a lost password through Drupal's reset. Pass `"adminPass"` in the body to choose your own
 password. The body also accepts `siteMail`, `adminName` and `timezone`.
 
 ::tip
@@ -308,11 +308,12 @@ backups.
 - **`503 migrating`** right after a deploy is the first boot. :pitch[Wait a few seconds.]
 - **"Try Again in a Moment", a 500 or a 1101 during the first minutes of admin work** on a new or
   just-updated site: the site restarted under memory pressure. Reload the page. Public cached pages
-  are not affected, and 1.1 removes the cause.
+  are not affected.
 - **The site went read-only** on the free plan: the account spent its daily write budget. It resets
   at midnight UTC; the paid plan raises it.
 - **Lost the admin password:** use Drupal's password reset, which needs mail set up.
-- **Lost the owner token:** set `PW_DIAGNOSTICS=1`, then `POST /firstrun?force=1` returns the stored
-  token and resets the admin password.
+- **Lost the owner token:** run `drangler recover-token my-site.example --store`. It proves you can
+  write to the site's Cloudflare account through your own wrangler login, gets the token back and
+  saves it to your keychain. It does not rotate the token or touch the admin password.
 - **Not sure what is running:** `drangler status my-site.example` reads the deployed version and
   claim state from one public request, and `drangler health` says which cache tier answered.

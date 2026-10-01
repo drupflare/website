@@ -32,7 +32,7 @@ drangler doctor    # checks ssh, wrangler and the sign-in, and says how to fix w
 
 Commands that read an existing server (`migrate`, `preview`, `doctor --source`) connect over SSH
 with your usual keys. Commands that act on a deployed site take its address, and the owner token
-that `site claim --save` stored.
+that `site claim` stored in your system keychain.
 
 Every command accepts these flags:
 
@@ -57,11 +57,19 @@ drangler dev
 ```
 
 **Put it on Cloudflare.** Deploy the same workspace, then claim the site to get the administrator
-password and the owner token. `--save` keeps the token in your user config so later commands find it.
+password and the owner token. The token goes into your system keychain without asking, so later
+commands find it; `--save` also writes it to your user config.
 
 ```sh
 drangler deploy
 drangler site claim my-site.example --title "My Site" --save
+```
+
+**Lost the owner token.** It is shown once, at the claim. If you can write to the Cloudflare account
+the site is deployed on, you can get it back, and `--store` saves it to the keychain:
+
+```sh
+drangler recover-token my-site.example --store
 ```
 
 **Copy an existing site to see it running.** `preview` reads your current server with read-only
@@ -105,24 +113,28 @@ drangler migrate export --url my-site.example --out site.sql
 
 ## 🚀 Deploy and Update
 
-| Command                 | What it does                                             |
-| ----------------------- | -------------------------------------------------------- |
-| `deploy`                | Builds if needed, checks, then deploys to your account   |
-| `site claim <target>`   | Mints the administrator password and the owner token     |
-| `update [worker]`       | Moves a checkout to another version, and its worker      |
-| `site upgrade <target>` | Deploys, waits for the database replay, runs the updates |
-| `site updb <target>`    | Reads Drupal's update chain and drives one step of it    |
+| Command                  | What it does                                             |
+| ------------------------ | -------------------------------------------------------- |
+| `deploy`                 | Builds if needed, checks, then deploys to your account   |
+| `site claim <target>`    | Mints the administrator password and the owner token     |
+| `recover-token <target>` | Gets a lost owner token back; `--store` keeps it         |
+| `update [worker]`        | Moves a checkout to another version, and its worker      |
+| `site upgrade <target>`  | Deploys, waits for the database replay, runs the updates |
+| `site updb <target>`     | Reads Drupal's update chain and drives one step of it    |
 
 ## 🩺 Operate a Site
 
-| Command              | What it does                                                   |
-| -------------------- | -------------------------------------------------------------- |
-| `status <target>`    | What is deployed: plan, version, claim state                   |
-| `health <target>`    | Probes a site and reports which cache tier answered            |
-| `heal <target>`      | Reports the repair ladder and performs the repairs it can      |
-| `reconcile <target>` | What a site still owes the shipped release, and drives it      |
-| `sweep <target>`     | How much of the site is cached, and what the scheduler decided |
-| `site invalidate`    | Purges cached pages by tag, or retires them all at once        |
+| Command                     | What it does                                                               |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `status <target>`           | What is deployed: plan, version, claim state                               |
+| `health <target>`           | Probes a site and reports which cache tier answered                        |
+| `heal <target>`             | Reports the repair ladder and performs the repairs it can                  |
+| `reconcile <target>`        | What a site still owes the shipped release, and drives it                  |
+| `sweep <target>`            | How much of the site is cached, and what the scheduler decided             |
+| `site invalidate`           | Purges cached pages by tag, or retires them all at once                    |
+| `setup cloudflare <target>` | Whether a Cloudflare account grant is connected; `--disconnect` revokes it |
+| `setup mail <target>`       | Sending-domain onboarding: what is set up, and takes the next step         |
+| `setup identity <target>`   | The OpenID Connect provider: read it, set it or clear it                   |
 
 ## 🚚 Migrate
 
@@ -234,8 +246,30 @@ Contrib modules come from the registry rather than an upload:
 | `config levers <file>` | The optional features a config declares, and each state |
 
 Settings resolve from a flag, then an environment variable, then a `drangler.json` in the nearest
-parent directory, then your user config. The owner token never goes in `drangler.json`: it is stored
-in your user config with :pitch[owner-only permissions].
+parent directory, then your user config. The owner token never goes in `drangler.json`, which is
+committed. `site claim` stores it in the system keychain, and a machine with no keychain falls back
+to your user config with :pitch[owner-only permissions].
+
+Every command finds the owner token in this order: `--token`, then `DRUPFLARE_OWNER_TOKEN`, then the
+keychain, then the global config. A token already in the config is not copied into the keychain on
+first use; `drangler recover-token --store` is the explicit way to move one.
+
+### Recovering the Owner Token
+
+`recover-token` proves you can write to the site's Cloudflare account instead of presenting the
+token. drangler writes a one-minute, single-use proof into the deployment's `CONFIG_KV` namespace
+through your own wrangler login, then presents it to the site's `/recover-token` route, which checks
+it, spends it and answers with the token. :pitch[Recovery does not rotate the token], so anything else
+holding it keeps working.
+
+- It needs a `wrangler login`, or `CLOUDFLARE_API_TOKEN`, that can edit KV. `--account` picks the
+  account when the login reaches several.
+- The namespace is `--kv-namespace`, else the `CONFIG_KV` binding in a `wrangler.jsonc` in the
+  working directory, else the one account namespace with `CONFIG_KV` in its title.
+- A new proof can take up to a minute to reach the site. drangler retries with growing pauses, at
+  most eight times, because the site refuses an address after 12 failed attempts in a minute.
+- `--json` puts the token in the `ownerToken` field.
+- It is not `drangler recover`, which reads the 30-day database recovery window.
 
 ## 🚦 Reading the Output
 
@@ -267,5 +301,6 @@ page for this request.
 `build`, `migrate install`, `update` and `preview` write to a local workspace; `preview --deploy`
 also deploys the duplicate as a new worker. `site`, `heal`, `modify`,
 `reconcile --run` and `sweep --run` change a live site, so each needs the owner token, and anything
-that changes what visitors see also needs `--yes`. :pitch[Nothing in drangler deletes a file or a directory.] The full reference is in the
+that changes what visitors see also needs `--yes`. `recover-token` writes one record to the site's
+`CONFIG_KV` namespace that expires in a minute, and needs your Cloudflare login instead of the token. :pitch[Nothing in drangler deletes a file or a directory.] The full reference is in the
 [drangler README](https://github.com/drupflare/drangler#readme).

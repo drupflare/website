@@ -13,8 +13,7 @@ Across a fleet, a Drupflare site costs about **0.6 cents a month** in infrastruc
 
 On your own Cloudflare account there is no per-site fee at all. The free plan covers **3.04 million
 views a month**, shared across every site you run. Past that, the $5 Workers Paid plan carries a
-thousand sites of 10,000 views each for :pitch[$5.80 a month]. The same thousand sites on Pantheon Basic
-would be $41,667.
+thousand sites of 10,000 views each for :pitch[$5.80 a month].
 
 | 1,000 Sites, 10,000 Views Each | Per Month |
 | ------------------------------ | --------- |

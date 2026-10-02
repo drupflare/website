@@ -10,7 +10,7 @@ intro: >-
 stats:
   - emoji: 💸
     value: 5,174x
-    label: cheaper to run than managed Drupal hosting
+    label: cheaper to run than a three-region VPS per site
   - emoji: 🌍
     value: 6.35x
     label: faster than a VPS on the same continent, up to 23.09x worldwide

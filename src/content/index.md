@@ -9,7 +9,7 @@ intro: >-
   machine to patch, nothing sits idle waiting for visitors, and it starts on Cloudflare's free plan.
 stats:
   - emoji: 💸
-    value: 1,500x
+    value: 5,174x
     label: cheaper to run than managed Drupal hosting
   - emoji: 🌍
     value: 6.35x

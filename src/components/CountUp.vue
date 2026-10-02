@@ -9,7 +9,7 @@
 <script setup lang="ts">
 const props = defineProps<{ value: string }>();
 
-// prefix, number, suffix: "1,500x" -> ["", "1,500", "x"]; a value with no number renders as-is
+// prefix, number, suffix: "5,174x" -> ["", "5,174", "x"]; a value with no number renders as-is
 const parts = computed(() => props.value.match(/^([^\d]*)([\d,.]+)(.*)$/));
 const target = computed(() => Number(parts.value?.[2]?.replace(/,/g, '') ?? 0));
 const decimals = computed(() => parts.value?.[2]?.split('.')[1]?.length ?? 0);

@@ -1,16 +1,16 @@
 ---
 title: Why
 headline: Why Drupflare
-description: Up to 1,500x cheaper to run, 6.35x faster on the same continent, and up to 99.99% less energy than a production Drupal deployment.
+description: Up to 5,174x cheaper to run, 6.35x faster on the same continent, and up to 99.99% less energy than a production Drupal deployment.
 intro: >-
   A Drupal site is usually a server that runs all day for visitors who come a few times an hour.
   Drupflare runs the same site only while someone is asking for a page, from the Cloudflare location
   nearest to them. Almost everything below follows from that.
 ---
 
-::claim{emoji="💸" figure="1,500x" title="Cheaper to Run"}
+::claim{emoji="💸" figure="5,174x" title="Cheaper to Run"}
 Across a fleet, a Drupflare site costs about **2.8 cents a month** in infrastructure. Pantheon lists its
-Basic plan at $500 a year per site, about $41.67 a month. That is roughly a **1,500x difference** before anyone has written
+Basic plan at $500 a year per site, about $41.67 a month. That is roughly a **5,174x difference** before anyone has written
 a line of code.
 
 On your own Cloudflare account there is no per-site fee at all. The free plan covers **3.04 million

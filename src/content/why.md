@@ -40,7 +40,7 @@ growing with distance, up to :pitch[23.09x] on the far side of the world.
 
 ::claim{emoji="📈" figure="12.25x" title="Steadier Under Load"}
 On the same machine, serving the same Drupal site, a cached page's slowest 5% came back
-**12.25x faster** on Drupflare than on nginx with PHP-FPM, 4 ms against 49, and with 32 visitors at
+:pitch[12.25x faster] on Drupflare than on nginx with PHP-FPM, 4 ms against 49, and with 32 visitors at
 once Drupflare answered :pitch[3.59x as many requests a second], 438 against 122.
 
 The interpreter starts in a few milliseconds, and a logged-in editor is served from a compiled plan
@@ -77,10 +77,10 @@ usually sized for its busiest hour. A Drupflare site uses a processor only while
 request. When nobody is visiting, it holds no compute at all.
 
 Against three regions with a high-availability pair in each, sized for peak, that is **99.99% less
-energy** (modelled): 390 kWh a year for the servers against under 0.1 kWh for Drupflare at a million
+energy** (modelled): 390 kWh a year for the servers against :pitch[under 0.1 kWh] for Drupflare at a million
 views a month, logged-in visitors included. In total, that is 21,355x less energy at a million views
-a month and :pitch[up to] 742,503x less at 10,000, where the same servers spread their idle draw over
-far fewer visitors. Each site avoids about 150 kg of CO2e and 1.9 kL of water a year (derived). A
+a month and :pitch[up to 742,503x less energy] at 10,000, where the same servers spread their idle draw over
+far fewer visitors. Each site avoids about **150 kg of CO2e** and **1.9 kL of water** a year (derived). A
 logged-in editor's admin page takes :pitch[a third less energy] per view (measured).
 
 The fleet comparison is smaller and still large: for a thousand sites of 10,000 views each, **99.97%

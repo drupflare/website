@@ -9,9 +9,7 @@ intro: >-
 ---
 
 ::claim{emoji="💸" figure="5,174x" title="Cheaper to Run"}
-Across a fleet, a Drupflare site costs about **2.8 cents a month** in infrastructure. Pantheon lists its
-Basic plan at $500 a year per site, about $41.67 a month. That is roughly a **5,174x difference** before anyone has written
-a line of code.
+Across a fleet, a Drupflare site costs about **2.8 cents a month** in infrastructure. For a latency-matched VPS, for 1,000 sites with 10,000 views each, the cost would be around **$5,000 a month**. That is roughly a **5,174x difference** before anyone has written a line of code. Against Pantheon Basic, the same thousand sites would be $41,667 a month, a :pitch[7,500x difference].
 
 On your own Cloudflare account there is no per-site fee at all. The free plan covers **3.04 million
 views a month**, shared across every site you run. Past that, the $5 Workers Paid plan carries a

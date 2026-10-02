@@ -79,15 +79,15 @@ usually sized for its busiest hour. A Drupflare site uses a processor only while
 request. When nobody is visiting, it holds no compute at all.
 
 Against three regions with a high-availability pair in each, sized for peak, that is **99.99% less
-energy** (modelled): 848 kWh a year for the servers against under 0.1 kWh for Drupflare at a million
-views a month, logged-in visitors included. Per view, that is 28,705x less energy at a million views
-a month and :pitch[up to] 998,087x less at 10,000, where the same servers spread their idle draw over
-far fewer visitors. A logged-in editor's admin page takes
-:pitch[a third less energy] per view (measured).
+energy** (modelled): 390 kWh a year for the servers against under 0.1 kWh for Drupflare at a million
+views a month, logged-in visitors included. In total, that is 21,355x less energy at a million views
+a month and :pitch[up to] 742,503x less at 10,000, where the same servers spread their idle draw over
+far fewer visitors. Each site avoids about 150 kg of CO2e and 1.9 kL of water a year (derived). A
+logged-in editor's admin page takes :pitch[a third less energy] per view (measured).
 
-The fleet comparison is smaller and still large: for a thousand sites of 10,000 views each, **99.95%
-less energy** than consolidated shared hosting behind a CDN, with :pitch[703 kg of CO2] avoided a
-year on the average US grid and :pitch[9,010 litres of water] (derived).
+The fleet comparison is smaller and still large: for a thousand sites of 10,000 views each, **99.97%
+less energy** than consolidated shared hosting behind a CDN, with :pitch[701 kg of CO2] avoided a
+year on the average US grid and :pitch[8,989 litres of water] (derived).
 ::
 
 ::claim{emoji="🧩" figure="65+" title="Contrib Modules Verified"}

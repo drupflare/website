@@ -1,7 +1,7 @@
 ---
 title: Why
 headline: Why Drupflare
-description: Up to 1,500x cheaper to run, 6.35x faster on the same continent, and up to 99.95% less energy than conventional Drupal hosting.
+description: Up to 1,500x cheaper to run, 6.35x faster on the same continent, and up to 99.99% less energy than a production Drupal deployment.
 intro: >-
   A Drupal site is usually a server that runs all day for visitors who come a few times an hour.
   Drupflare runs the same site only while someone is asking for a page, from the Cloudflare location
@@ -73,14 +73,21 @@ database for the page. Drupflare removes both trips.
 The result is a Drupal site that :pitch[behaves like a static one for visitors] and stays fully dynamic
 for the people editing it.
 
-::claim{emoji="🌱" figure="99.95%" title="Less Energy"}
-A conventional host draws power all day whether anyone visits or not, and most small sites are idle
-almost all the time. A Drupflare site uses a processor only while it answers a request. When nobody
-is visiting, it holds no compute at all.
+::claim{emoji="🌱" figure="99.99%" title="Less Energy"}
+A conventional host draws power all day whether anyone visits or not, and production Drupal is
+usually sized for its busiest hour. A Drupflare site uses a processor only while it answers a
+request. When nobody is visiting, it holds no compute at all.
 
-For a thousand sites of 10,000 views each, that is **99.95% less energy** than consolidated shared
-hosting behind a CDN: :pitch[703 kg of CO2] avoided a year on the average US grid, and
-:pitch[9,010 litres of water].
+Against three regions with a high-availability pair in each, sized for peak, that is **99.99% less
+energy** (modelled): 848 kWh a year for the servers against under 0.1 kWh for Drupflare at a million
+views a month, logged-in visitors included. Per view, that is 28,705x less energy at a million views
+a month and :pitch[up to] 998,087x less at 10,000, where the same servers spread their idle draw over
+far fewer visitors. A logged-in editor's admin page takes
+:pitch[a third less energy] per view (measured).
+
+The fleet comparison is smaller and still large: for a thousand sites of 10,000 views each, **99.95%
+less energy** than consolidated shared hosting behind a CDN, with :pitch[703 kg of CO2] avoided a
+year on the average US grid and :pitch[9,010 litres of water] (derived).
 ::
 
 ::claim{emoji="🧩" figure="65+" title="Contrib Modules Verified"}

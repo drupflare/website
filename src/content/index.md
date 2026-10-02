@@ -18,8 +18,8 @@ stats:
     value: 3.04M
     label: views a month on Cloudflare's free plan
   - emoji: 🌱
-    value: 99.95%
-    label: less energy, best case, for a fleet of small sites
+    value: 99.99%
+    label: less energy than a multi-region production deployment, modelled
 repos:
   - emoji: ⛱️
     name: worker

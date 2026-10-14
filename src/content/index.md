@@ -9,7 +9,7 @@ intro: >-
   machine to patch, nothing sits idle waiting for visitors, and it starts on Cloudflare's free plan.
 stats:
   - emoji: 💸
-    value: 5,174x
+    value: 10,037x
     label: cheaper to run than a three-region VPS per site
   - emoji: 🌍
     value: 6.35x

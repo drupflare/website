@@ -1,15 +1,15 @@
 ---
 title: Why
 headline: Why Drupflare
-description: Up to 5,174x cheaper to run, 6.35x faster on the same continent, and up to 99.99% less energy than a production Drupal deployment.
+description: Up to 10,037x cheaper to run, 6.35x faster on the same continent, and up to 99.99% less energy than a production Drupal deployment.
 intro: >-
   A Drupal site is usually a server that runs all day for visitors who come a few times an hour.
   Drupflare runs the same site only while someone is asking for a page, from the Cloudflare location
   nearest to them. Almost everything below follows from that.
 ---
 
-::claim{emoji="💸" figure="5,174x" title="Cheaper to Run"}
-Across a fleet, a Drupflare site costs about **0.6 cents a month** in infrastructure. A VPS that answers visitors from nearby needs a server in each of three regions behind a load balancer, which is **$30 a month** per site. For 1,000 sites with 10,000 views each, that is **$30,000 a month** against **$5.80** for Drupflare, a **5,174x difference** before anyone has written a line of code. Against Pantheon Basic, the same thousand sites would be $41,667 a month, a :pitch[7,186x difference].
+::claim{emoji="💸" figure="10,037x" title="Cheaper to Run"}
+Across a fleet, a Drupflare site costs about **0.6 cents a month** in infrastructure. A VPS that answers visitors from nearby needs a server in each of three regions behind a load balancer, which is **$58.20 a month** per site. For 1,000 sites with 10,000 views each, that is **$58,200 a month** against **$5.80** for Drupflare, a **10,037x difference** before anyone has written a line of code. Against Pantheon Basic, the same thousand sites would be $41,667 a month, a :pitch[7,186x difference].
 
 On your own Cloudflare account there is no per-site fee at all. The free plan covers **3.04 million
 views a month**, shared across every site you run. Past that, the $5 Workers Paid plan carries a
@@ -18,8 +18,8 @@ thousand sites of 10,000 views each for :pitch[$5.80 a month].
 | 1,000 Sites, 10,000 Views Each | Per Month |
 | ------------------------------ | --------- |
 | Drupflare, your own account    | $5.80     |
-| One small VPS per site         | $5,000    |
-| Three-region VPS per site      | $30,000   |
+| One small VPS per site         | $10,500   |
+| Three-region VPS per site      | $58,200   |
 | Pantheon Basic                 | $41,667   |
 
 ::
@@ -125,8 +125,8 @@ Speed figures are :pitch[measured on deployed Cloudflare Workers] and against ng
 the same Drupal tree and database. Cost, energy, carbon and water are derived from those measurements
 and from published prices and grid factors. The best case is the headline; the method, the ranges and
 the cases where a VPS wins are in the
-[impact report](https://github.com/drupflare/worker/blob/master/docs/impact.md), the
-[technical report](https://github.com/drupflare/worker/blob/master/TECHNICAL_REPORT.md) and the
+[impact report](https://docs.drupflare.com/impact.html), the
+[technical report](https://docs.drupflare.com/technical-report.html) and the
 [README](https://github.com/drupflare/worker#readme).
 
 :deploy-button

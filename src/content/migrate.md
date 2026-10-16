@@ -142,6 +142,7 @@ refused before it leaves your computer. **Local commands** run on your computer.
 | `--follow-interval`         | minutes between polls of a followed repository; 5 by default, and the least     |
 | `--carry-key <name...>`     | bring a blanked credential into the duplicate                                   |
 | `--hold-mail`               | on your own machine, queue the duplicate's mail and never send it               |
+| `--edge [branch]`           | use a prerelease worker: the tip of a branch (`master` when bare), from the CDN |
 | `--plan <free or paid>`     | the Workers plan the duplicate models                                           |
 | `--deploy`                  | put the duplicate on your Cloudflare account, behind Access, not your computer  |
 | `--access-email`            | with `--deploy`, who may open the copy; the wrangler login by default           |
@@ -168,6 +169,7 @@ refused instead of left waiting, so a CI job never hangs.
 | `DRANGLER_PREVIEW_ACCESS_EMAIL`    | `--access-email`    |
 | `DRANGLER_PREVIEW_DEPLOY`          | `--deploy` (`1`)    |
 | `DRANGLER_PREVIEW_HOLD_MAIL`       | `--hold-mail` (`1`) |
+| `DRANGLER_PREVIEW_EDGE`            | `--edge`            |
 
 ### What Preview Decides for You
 
@@ -177,6 +179,10 @@ secrets. They travel in the database, and a copy that holds them can charge card
 API or push to your users' phones. Preview finds every one of them, empties them in the duplicate
 while the database stays as it was, and lists them by name. Reads that need no key still work and
 anything that needs one fails closed. `--carry-key mantle2_api_key` brings one back on purpose.
+
+**Stylesheets and scripts.** Drupal's own CSS and JS aggregation cannot run on a Worker, and a site
+that had it on loses its theme without it. Preview turns it off in the duplicate and tells you when
+your site had it on. The worker combines files at the edge instead.
 
 **Mail.** A mail setup that opens its own connection to a mail server, such as the SMTP module under
 Mail System, cannot run on a Worker, so preview moves it onto the worker's mail layer. With the logins

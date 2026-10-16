@@ -37,9 +37,13 @@ server and names anything missing:
 drangler doctor --source deploy@old.example --root /var/www/html
 ```
 
-**Finding the Drupal root.** `--root` is the directory on the server that holds Drupal's `index.php`
-and `sites/` folder. It is usually `/var/www/html`, or `/var/www/<site>/web` for a Composer project.
-`drush status` prints it as `Drupal root`.
+**Finding the Drupal root.** You do not have to. Without `--root`, `drangler preview` reads the
+server's Apache or nginx configuration, picks the document root that holds Drupal's `index.php`, and
+finds the Composer project above it, the project's own `drush`, the web server's user and the
+`sites/` directory, so a site that lives somewhere unusual is found from what is on the server. If
+you want to name it, `--root` is the directory with `index.php` and `sites/` in it, usually
+`/var/www/html` or `/var/www/<site>/web`. `drush status` prints it as `Drupal root`. When one server
+runs several Drupal sites, `--site <hostname>` says which one.
 
 **If your code is in git.** A preview copies the code on the server's disk, including edits nobody
 committed. To see whether the server matches your repository first:
@@ -58,13 +62,14 @@ either on your own machine or on your Cloudflare account, so you can click throu
 deciding anything.
 
 ```sh
-drangler preview --host deploy@old.example --root /var/www/html
+drangler preview --host deploy@old.example
 ```
 
 :pitch[A preview is a duplicate, never a replacement.] Every command it runs on the old server is
 read-only, the database and files are streamed back, and the live site keeps serving the whole time.
-It asks before each step. `--full` runs every step after a single confirmation, and `--dry-run` shows
-every step and command without running any of them.
+It asks before each step. `--full` runs every step after a single confirmation, `--confirm <host>`
+runs every step with no prompt, and `--dry-run` shows every step and command without running any of
+them.
 
 What the duplicate carries:
 
@@ -73,17 +78,26 @@ What the duplicate carries:
 - **Uploaded files**, public and private. Image styles and aggregated CSS and JS are rebuilt instead
   of copied.
 - **Custom and contrib code** in `modules/`, `themes/`, `profiles/` and `libraries/`. Composer
-  libraries the duplicate lacks are listed as ready commands.
-- **Settings**: literal `$config` overrides, and a Redis connection as a Redis URL.
+  libraries the duplicate lacks are installed from the registry after the claim; any that fail are
+  listed as ready commands.
+- **Settings**: literal `$config` overrides, module settings written as literal `$settings` values,
+  and a Redis connection as a Redis URL.
+- **Application state kept in Redis**, such as mailed tokens and markers that stop a notification
+  repeating. A database dump cannot hold it, so preview reads the keys with one fixed read-only
+  script and stores them in the duplicate's own database, where a `\Redis` stand-in serves them.
 - **Server rules**: unconditional redirects and response headers from `.htaccess`. Anything more
   involved is listed for you to review.
 - **Docroot files** a browser fetches by name, such as search-engine verification pages, `ads.txt`
   and `.well-known/`.
 
 It ends by checking the duplicate against the source: content and file counts, then the front page,
-the login page, a node and a public file. Given the live site's address with `--source-url`, each
-page must answer with the same status there.
-`drangler preview` ships in drangler 0.3 with Drupflare 1.0.3.
+the login page, a node, a public file and any page you add with `--check`. Given the live site's
+address with `--source-url`, each page must answer with the same status there, and a JSON page must
+return the same keys. A page the source answers from your own Cloudflare Access is reported as not
+compared, because the edge answered there and Drupal did not.
+`drangler preview` ships in drangler 0.3; discovery, credential handling, `--follow` and the
+Access-protected deploy are new in drangler 0.4, which needs Drupflare 1.0.4 for the request headers
+a headless site reads.
 
 ### Reading a Dry Run
 
@@ -91,13 +105,13 @@ Add `--dry-run` to see the whole plan before anything happens. Nothing is execut
 copied:
 
 ```console
-$ drangler preview --host deploy@old.example --root /var/www/html --dry-run
+$ drangler preview --host deploy@old.example --dry-run
 dry run against deploy@old.example; nothing was executed
 
-1. Survey the Source
-2. Score the Move
+1. Find the Site on the Host
+2. Survey the Source
 ...
-10. Check the Duplicate
+12. Check the Duplicate
 
 read-only commands on the host
   $ php -v
@@ -110,22 +124,79 @@ local commands
   $ bunx wrangler dev --port 8787
 ```
 
-The numbered list is the ten steps it will ask about. **Read-only commands on the host** run on the
-server over SSH, and every one passes an allow-list first, so a command that could write is refused
-before it leaves your computer. **Local commands** run on your computer.
+The numbered list is the twelve steps it will ask about. **Read-only commands on the host** run on
+the server over SSH, and every one passes an allow-list first, so a command that could write is
+refused before it leaves your computer. **Local commands** run on your computer.
 
-| Flag           | What it does                                                                    |
-| -------------- | ------------------------------------------------------------------------------- |
-| `--host`       | the server, typed the way you would for `ssh`: `user@host`, or `user@host:port` |
-| `--root`       | the Drupal root on that server                                                  |
-| `--identity`   | an SSH key file, when it is not your default key                                |
-| `--dry-run`    | list every step and command, and run none of them                               |
-| `--full`       | run every step after one confirmation, instead of asking before each            |
-| `--deploy`     | put the duplicate on your Cloudflare account instead of your computer           |
-| `--url`        | with `--deploy`, the address to check once it is up                             |
-| `--source-url` | the live site's address, so each checked page must match its status there       |
-| `--out`        | where the copy is kept; `.drangler/preview/<host>` by default                   |
-| `--port`       | the local port for the duplicate; 8787 by default                               |
+| Flag                        | What it does                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `--host`                    | the server, typed the way you would for `ssh`: `user@host`, or `user@host:port` |
+| `--root`                    | the Drupal root on that server, when you would rather not have it found         |
+| `--site`                    | which site to take when the server runs several                                 |
+| `--identity`                | an SSH key file, when it is not your default key                                |
+| `--dry-run`                 | list every step and command, and run none of them                               |
+| `--full`                    | run every step after one confirmation, instead of asking before each            |
+| `--confirm <host>`          | run every step with no prompt; the value must name the host, as typing it would |
+| `--check <path...>`         | pages to compare with the live site, beside the front page and the login page   |
+| `--follow <module=repo...>` | keep a module current from a git repository, as `mymodule=my-org/mymodule`      |
+| `--follow-interval`         | minutes between polls of a followed repository; 5 by default, and the least     |
+| `--carry-key <name...>`     | bring a blanked credential into the duplicate                                   |
+| `--hold-mail`               | on your own machine, queue the duplicate's mail and never send it               |
+| `--plan <free or paid>`     | the Workers plan the duplicate models                                           |
+| `--deploy`                  | put the duplicate on your Cloudflare account, behind Access, not your computer  |
+| `--access-email`            | with `--deploy`, who may open the copy; the wrangler login by default           |
+| `--source-url`              | the live site's address, so each checked page must match its status there       |
+| `--out`                     | where the copy is kept; `.drangler/preview/<host>` by default                   |
+| `--port`                    | the local port for the duplicate; 8787 by default                               |
+
+### Answering Without a Prompt
+
+Every choice has a flag, a `DRANGLER_PREVIEW_<NAME>` variable and a prompt on a terminal. A flag wins
+over a variable, a list is comma separated, a switch is `1`, and a question nobody can answer is
+refused instead of left waiting, so a CI job never hangs.
+
+| Variable                           | Same as             |
+| ---------------------------------- | ------------------- |
+| `DRANGLER_PREVIEW_ROOT`            | `--root`            |
+| `DRANGLER_PREVIEW_SITE`            | `--site`            |
+| `DRANGLER_PREVIEW_CONFIRM`         | `--confirm`         |
+| `DRANGLER_PREVIEW_PLAN`            | `--plan`            |
+| `DRANGLER_PREVIEW_CHECK`           | `--check`           |
+| `DRANGLER_PREVIEW_FOLLOW`          | `--follow`          |
+| `DRANGLER_PREVIEW_FOLLOW_INTERVAL` | `--follow-interval` |
+| `DRANGLER_PREVIEW_CARRY_KEYS`      | `--carry-key`       |
+| `DRANGLER_PREVIEW_ACCESS_EMAIL`    | `--access-email`    |
+| `DRANGLER_PREVIEW_DEPLOY`          | `--deploy` (`1`)    |
+| `DRANGLER_PREVIEW_HOLD_MAIL`       | `--hold-mail` (`1`) |
+
+### What Preview Decides for You
+
+:pitch[A copy of your site should not be able to act as your site.] Sites often keep secrets in
+Drupal's own configuration: payment keys, the key to a backend API, a mail login, OAuth client
+secrets. They travel in the database, and a copy that holds them can charge cards, write to your
+API or push to your users' phones. Preview finds every one of them, empties them in the duplicate
+while the database stays as it was, and lists them by name. Reads that need no key still work and
+anything that needs one fails closed. `--carry-key mantle2_api_key` brings one back on purpose.
+
+**Mail.** A mail setup that opens its own connection to a mail server, such as the SMTP module under
+Mail System, cannot run on a Worker, so preview moves it onto the worker's mail layer. With the logins
+blank that layer has no relay and the copy sends nothing until you give it one. On your own machine
+`--hold-mail` queues each message instead, so you can read a verification code from the queue.
+
+**Cloudflare Access.** `--deploy` first creates an Access application on the `workers.dev` address,
+with a policy for one email address and a service token for drangler, and waits until the edge turns
+strangers away. Only then does it upload. Nothing in DNS changes. The API token needs Access edit
+rights as well as Workers; without them preview stops before it creates or uploads anything and
+says which permission is missing.
+
+**A slow first start.** A new site unpacks its whole database the first time it starts, and on a large
+one the local runtime can end during it. Preview starts it again, up to five times, and counts the
+site up after two good answers in a row.
+
+**Your own modules.** `--follow mymodule=my-org/mymodule` adds the repository once the copy is claimed
+and the site polls it every five minutes, so a push to the repository reaches the copy. A public
+repository needs no token. The repository's `vendor/` folder is never delivered, so a change that adds
+a Composer package needs the module's own CI to run `drangler build --project`.
 
 The steps below are what it runs, and each is also a command of its own.
 

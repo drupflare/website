@@ -74,11 +74,26 @@ drangler recover-token my-site.example --store
 
 **Copy an existing site to see it running.** `preview` reads your current server with read-only
 commands and brings up a working duplicate. :pitch[The live site is not touched.] Available from drangler
-0.3.
+0.3; from 0.4 it finds the Drupal root itself, so the host is all it needs.
 
 ```sh
-drangler preview --host deploy@old.example --root /var/www/html
+drangler preview --host deploy@old.example
 ```
+
+Every choice it makes has a flag, a `DRANGLER_PREVIEW_<NAME>` variable and a prompt on a terminal, so
+a script answers it without flags and a person answers it by typing. A flag wins over a variable, and
+a question nobody can answer is refused rather than left waiting.
+
+```sh
+DRANGLER_PREVIEW_CONFIRM=old.example DRANGLER_PREVIEW_FOLLOW=mymodule=my-org/mymodule \
+  drangler preview --host deploy@old.example
+```
+
+Credentials the database holds, such as payment keys, mail logins and OAuth secrets, are blanked in
+the duplicate and listed by name, so a copy cannot act as your live site. `--carry-key <name>` brings
+one back. `--follow module=owner/repo` keeps a module current from git, `--check <path>` compares more
+pages with the live site, and `--deploy` puts the copy on your Cloudflare account behind a Cloudflare
+Access login that only you can pass. The full list is in [Migrate](/migrate).
 
 **Keep an eye on it.** `status` says what is deployed, `health` says whether it is serving. Both
 exit non-zero on a problem, so either can go in a monitor or a CI job.
@@ -219,12 +234,14 @@ drangler modify activate 3d81ee07 --yes
 | `modify status`         | compare what is live on the site with what is on disk        |
 | `modify diff`           | list the files an upload would send; exits `3` if any        |
 | `modify release --tag`  | upload from a tagged commit, refusing uncommitted edits      |
+| `modify list`           | uploaded packages, and the git repositories the site follows |
 | `modify require <name>` | install contrib from drupal.org or Packagist                 |
 | `modify drop <rev>`     | delete an old revision and the files only it used            |
 | `modify dev`            | run `drangler dev` with this project mounted, live-reloading |
 
 Contrib modules come from the registry rather than an upload:
-`drangler modify require drupal/pathauto drupal/metatag --enable`.
+`drangler modify require drupal/pathauto drupal/metatag --enable`. Pin a version with
+`--constraint`, as in `drangler modify require phpmailer/phpmailer --constraint v6.12.0`.
 
 ## ☁️ Cloudflare Helpers
 
@@ -299,7 +316,8 @@ page for this request.
 ## ✍️ What Writes
 
 `build`, `migrate install`, `update` and `preview` write to a local workspace; `preview --deploy`
-also deploys the duplicate as a new worker. `site`, `heal`, `modify`,
+also creates a Cloudflare Access application and deploys the duplicate as a new worker, which needs
+a Cloudflare API token that can edit Access. `site`, `heal`, `modify`,
 `reconcile --run` and `sweep --run` change a live site, so each needs the owner token, and anything
 that changes what visitors see also needs `--yes`. `recover-token` writes one record to the site's
 `CONFIG_KV` namespace that expires in a minute, and needs your Cloudflare login instead of the token. :pitch[Nothing in drangler deletes a file or a directory.] The full reference is in the

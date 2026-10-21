@@ -23,6 +23,7 @@ export interface LinkItem {
 
 export const NAV_LINKS: LinkItem[] = [
 	{ name: 'Why', url: '/why', icon: 'i-lucide-flame' },
+	{ name: 'Security', url: '/security', icon: 'i-lucide-shield-check' },
 	{ name: 'Migrate', url: '/migrate', icon: 'i-lucide-truck' },
 	{ name: 'How-To', url: '/how-to', icon: 'i-lucide-book-open' },
 	{ name: 'drangler', url: '/drangler', icon: 'i-lucide-terminal' },

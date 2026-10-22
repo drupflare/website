@@ -19,11 +19,11 @@ Cloudflare's security model page describes the outer layers. The Drupflare side 
 shipping interpreter's glue and its list of imports.
 ::
 
-::claim{emoji="🗺️" figure="10" title="Attack Classes Removed"}
-We mapped 19 published vulnerabilities and incident classes, from Drupalgeddon to PHP-FPM, Shellshock
-and container escapes. :pitch[Ten need a component a Drupflare site does not have], and four more are
-contained by the sandbox. The verdicts are inferred from the architecture, and the map, with
-advisories and sources, is in the docs.
+::claim{emoji="🗺️" figure="12" title="Attack Classes Removed"}
+We mapped 21 published vulnerabilities and incident classes, from Drupalgeddon to PHP-FPM, Shellshock,
+container escapes and PHP2Shell. :pitch[Twelve need a component a Drupflare site does not have], and
+four more are contained by the sandbox. The verdicts are inferred from the architecture, and the map,
+with advisories and sources, is in the docs.
 ::
 
 ::claim{emoji="⏱️" figure="<24h" title="Cloudflare's Stated V8 Patch Gap"}
@@ -42,18 +42,19 @@ which of the four primitives answers which failure.
 ## 🧭 What It Removes
 
 Each row is an attack that needs something a Drupflare site does not contain. The full map has all
-19 rows, with advisories, dates and sources, on the
+21 rows, with advisories, dates and sources, on the
 [security page of the docs](https://docs.drupflare.com/security.html).
 
-| Attack                                       | Needs                                      | On Drupflare                        |
-| -------------------------------------------- | ------------------------------------------ | ----------------------------------- |
-| PHP-FPM behind nginx, CVE-2019-11043         | A FastCGI process manager and a web server | Neither exists                      |
-| PHP-CGI on Windows, CVE-2024-4577            | The CGI interface on Windows with Apache   | Neither exists                      |
-| Shellshock, CVE-2014-6271                    | Bash reached through CGI                   | No shell and no CGI                 |
-| Apache path traversal, CVE-2021-41773        | Apache 2.4.49 and a filesystem to traverse | Neither exists                      |
-| ImageMagick delegates, CVE-2016-3714         | A shell for the delegate to call           | No shell, and image work runs in JS |
-| Container and kernel escapes                 | A process on a shared Linux kernel         | That kernel belongs to the platform |
-| PHP SoapServer use-after-free, CVE-2026-7261 | The `soap` extension                       | Not compiled into the interpreter   |
+| Attack                                         | Needs                                                                           | On Drupflare                                                                 |
+| ---------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| PHP-FPM behind nginx, CVE-2019-11043           | A FastCGI process manager and a web server                                      | Neither exists                                                               |
+| PHP-CGI on Windows, CVE-2024-4577              | The CGI interface on Windows with Apache                                        | Neither exists                                                               |
+| Shellshock, CVE-2014-6271                      | Bash reached through CGI                                                        | No shell and no CGI                                                          |
+| Apache path traversal, CVE-2021-41773          | Apache 2.4.49 and a filesystem to traverse                                      | Neither exists                                                               |
+| ImageMagick delegates, CVE-2016-3714           | A shell for the delegate to call                                                | No shell, and image work runs in JS                                          |
+| Container and kernel escapes                   | A process on a shared Linux kernel                                              | That kernel belongs to the platform                                          |
+| PHP SoapServer use-after-free, CVE-2026-7261   | The `soap` extension                                                            | Not compiled into the interpreter                                            |
+| PHP2Shell, CVE-2026-109618 and CVE-2026-109619 | A request startup and shutdown on every request, and an enforced `memory_limit` | Neither exists: PHP runs inside one retained request on the system allocator |
 
 The interpreter has a short extension list: `soap`, `phar`, `intl`, `gd`, `openssl`, `exif` and
 `sqlite` are not in it. An extension that is not compiled in has no bug for anyone to reach.

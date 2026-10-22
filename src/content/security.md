@@ -20,10 +20,10 @@ shipping interpreter's glue and its list of imports.
 ::
 
 ::claim{emoji="🗺️" figure="12" title="Attack Classes Removed"}
-We mapped 21 published vulnerabilities and incident classes, from Drupalgeddon to PHP-FPM, Shellshock,
-container escapes and PHP2Shell. :pitch[Twelve need a component a Drupflare site does not have], and
-four more are contained by the sandbox. The verdicts are inferred from the architecture, and the map,
-with advisories and sources, is in the docs.
+We mapped 24 published vulnerabilities and incident classes, from Drupalgeddon to PHP-FPM, Shellshock,
+container escapes and PHP2Shell. :pitch[Twelve need a component a Drupflare site does not have], four
+more are contained by the sandbox, and eight work as they do on any host. The verdicts are inferred
+from the architecture, and the map, with advisories and sources, is in the docs.
 ::
 
 ::claim{emoji="⏱️" figure="<24h" title="Cloudflare's Stated V8 Patch Gap"}
@@ -42,7 +42,7 @@ which of the four primitives answers which failure.
 ## 🧭 What It Removes
 
 Each row is an attack that needs something a Drupflare site does not contain. The full map has all
-21 rows, with advisories, dates and sources, on the
+24 rows, with advisories, dates and sources, on the
 [security page of the docs](https://docs.drupflare.com/security.html).
 
 | Attack                                         | Needs                                                                           | On Drupflare                                                                 |
@@ -62,9 +62,24 @@ The interpreter has a short extension list: `soap`, `phar`, `intl`, `gd`, `opens
 ## 🔎 Where the Evidence Comes From
 
 Every claim in the [docs security page](https://docs.drupflare.com/security.html) is tagged as read
-from a source, measured on the shipping build, inferred from the architecture, or unknown. The
-sources are Cloudflare's security documentation, the PHP and Drupal advisories and NVD records. The
-docs page also covers what the architecture leaves in place, such as application bugs and shared
-platform risk, so a reviewer can weigh both sides.
+from a source, measured by a named test or command, or inferred from the architecture, and every row
+closes to one of three verdicts: removed, contained or open. A claim that could not be established
+counts as open. The sources are Cloudflare's security documentation, the PHP and Drupal advisories
+and NVD records. The docs page also covers what the architecture leaves in place, such as
+application bugs and shared platform risk, so a reviewer can weigh both sides.
+
+## 🔐 What Version 1.0.4 Adds
+
+These close routes a foothold in PHP could use to stay in a site. Each row says what it contains and
+how it was measured, and the docs name what is left over.
+
+| Route                            | Control                                                                                         |
+| -------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Reading the owner token from SQL | Only its SHA-256 is kept, in storage the SQL bridge cannot read, and recovery rotates the token |
+| A planted module file            | Each file is checked against a sealed SHA-256 record when it is first opened on a claimed site  |
+| A planted interpreter heap image | A sealed SHA-256 root is verified before any byte is restored, or the site boots from the pack  |
+| Owner actions leaving no trace   | A hash-chained log of owner calls that `drangler audit --verify` recomputes                     |
+| A page stored for one visitor    | A page whose response varies by `Accept`, `Origin` or `User-Agent` is not stored                |
+| Security headers a module sets   | Eleven allow-listed headers are stored with the page and replayed on every cache tier           |
 
 :deploy-button

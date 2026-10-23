@@ -83,9 +83,29 @@ a month and :pitch[up to 742,503x less energy] at 10,000, where the same servers
 far fewer visitors. Each site avoids about **150 kg of CO2e** and **1.9 kL of water** a year (derived). A
 logged-in editor's admin page takes :pitch[a third less energy] per view (measured).
 
+Those figures stop at the data centre. On the visitor's side, a repeat view answered by spool uses
+0.53 J on a desktop processor against 1.29 J without it (measured), and the two are kept apart
+because one is a measured package reading and the other a model of server CPU time.
+
 The fleet comparison is smaller and still large: for a thousand sites of 10,000 views each, **99.97%
 less energy** than consolidated shared hosting behind a CDN, with :pitch[701 kg of CO2] avoided a
 year on the average US grid and :pitch[8,989 litres of water] (derived).
+::
+
+::claim{emoji="📱" figure="0" title="Requests on a Repeat View"}
+Drupflare ships a small service worker, spool, that keeps a copy of the pages a visitor has seen and
+answers their repeat views on the device. On two deployed sites that differed only in spool, :pitch[48 of 48
+repeat views made no network request], against one to six without it (measured). A repeat view used
+**0.53 J** on a desktop processor against 1.29 J (measured), and a first view of a page with an image,
+a video and an embedded player used 12.9 J against 32.8 J, almost all of it saved by swapping the
+embed for a click-to-load facade (measured, one synthetic page, a desktop and not a phone).
+
+It costs the server about 5 ms of CPU to decorate a page, and each new visitor adds about two requests
+(measured, derived). Whether that lowers a site's request count depends on how many pages a visitor
+reads: at half their views answered locally, spool breaks even at four views per visitor
+(derived, modelled), and a short visit costs the Worker more requests, not fewer. Spool is on for
+paid sites and off for free ones, and the [impact report](https://docs.drupflare.com/impact.html)
+shows the rows behind each figure and where they do not move.
 ::
 
 ::claim{emoji="🧩" figure="65+" title="Contrib Modules Verified"}

@@ -167,6 +167,15 @@ curl -X PUT "https://my-site.example/settings" \
 
 A `GET` on `/settings` lists every lever with the value in force and where it came from.
 
+Spool, the small service worker that answers repeat views on the visitor's own device, follows the
+plan: on for paid sites, off for free ones. Set `SPOOL` to `1` or `0` in `wrangler.jsonc` to
+override it. Three more levers, all on while spool is on, turn off its page changes one by one:
+`SPOOL_IMAGES` converts images to WebP for browsers that accept it, `SPOOL_VIDEO` adds
+`preload="none"` to video tags, and `SPOOL_EMBEDS` swaps YouTube and Vimeo players for a facade
+until someone clicks. Each new visitor costs the Worker about two extra requests, so a site whose
+visitors usually leave after one page can end up with more requests, not fewer. The
+[impact report](https://docs.drupflare.com/impact.html) has the measurements and the break-even.
+
 ## ✉️ 7. Mail, Sign-On and Redis
 
 - **Mail:** `/setup/mail` onboards a sending domain. The `smtp` module is verified if you already

@@ -70,8 +70,9 @@ application bugs and shared platform risk, so a reviewer can weigh both sides.
 
 ## 🔐 What Version 1.0.4 Adds
 
-These close routes a foothold in PHP could use to stay in a site. Each row says what it contains and
-how it was measured, and the docs name what is left over.
+These close routes a foothold in PHP could use to stay in a site or reach past it. The docs rate 19
+classes before and after the work: 4 move from open to removed, 12 to contained, and 3 stay open.
+Each row below names the control, and the docs give the measurement and what is left over.
 
 | Route                            | Control                                                                                         |
 | -------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -81,5 +82,19 @@ how it was measured, and the docs name what is left over.
 | Owner actions leaving no trace   | A hash-chained log of owner calls that `drangler audit --verify` recomputes                     |
 | A page stored for one visitor    | A page whose response varies by `Accept`, `Origin` or `User-Agent` is not stored                |
 | Security headers a module sets   | Eleven allow-listed headers are stored with the page and replayed on every cache tier           |
+| PHP opening a raw socket         | The interpreter glue no longer exposes the socket calls. A node test built three, now none      |
+| PHP calling a JavaScript global  | The vrzno path is closed. A node test recorded three calls before and none after                |
+| A private address reached        | The outbound guard refuses alternate spellings, and a tenant cannot switch it off               |
+| Framing a page                   | A Content-Security-Policy baseline, in report-only mode by default on paid sites                |
+| A swapped Composer archive       | drupal.org archives are checked against their published digests before they install             |
+| PHP2Shell                        | The interpreter is rebuilt at PHP 8.5.12, which carries the fix                                 |
+
+Three rows stay open. A Drupal admin can remove the Content-Security-Policy baseline through the
+`RESPONSE_HEADERS` setting. Some ownership keys, such as the git remotes and the claim record, still
+sit in SQL that a foothold can reach. A planted row on a read replica lane is not checked. Packagist
+installs are not digest-verified either, and the docs list that as a residual of the Composer row.
+
+To report a vulnerability, use the private reporting link in the
+[security policy](https://github.com/drupflare/worker/security/policy) and not a public issue.
 
 :deploy-button

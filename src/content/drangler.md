@@ -16,7 +16,7 @@ bun add -g @drupflare/drangler
 npm i -g @drupflare/drangler
 ```
 
-Every release also ships :pitch[a single-file binary for Linux, macOS and Windows] on x64 and arm64, with a
+Every release also ships :pitch[a single-file binary for Linux and macOS on x64 and arm64, and Windows on x64], with a
 `SHA256SUMS` file beside it. drangler needs `ssh` and `wrangler`; `drangler doctor` checks both.
 
 ## 🚀 First Time

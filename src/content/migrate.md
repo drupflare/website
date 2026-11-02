@@ -196,7 +196,7 @@ rights as well as Workers; without them preview stops before it creates or uploa
 says which permission is missing.
 
 **A slow first start.** A new site unpacks its whole database the first time it starts, and on a large
-one the local runtime can end during it. Preview starts it again, up to five times, and counts the
+one the local runtime can end during it. Preview starts it again if it ends, up to five starts in all, and counts the
 site up after two good answers in a row.
 
 **Your own modules.** `--follow mymodule=my-org/mymodule` adds the repository once the copy is claimed
@@ -346,7 +346,7 @@ CORPUS_PLAN=paid bun scripts/e2e/corpus-lane.ts --repo=thunder --keep
 It needs Docker running and the drangler repository cloned beside the worker
 (`git clone https://github.com/drupflare/drangler ~/drupflare/drangler`). The dev server it starts is at
 `http://localhost:8840`. Thunder's native build lands in `native/thunder`, the scored row is written to
-`docs/compatibility.md` and `docs/compatibility.json`, and `--keep` leaves the site's state under
+`docs/architecture/compatibility.md` and `docs/compatibility.json`, and `--keep` leaves the site's state under
 `/tmp/cfw-corpus-thunder-*` so you can start it again and look around.
 
 ## 🚪 Leaving Is Part of the Plan

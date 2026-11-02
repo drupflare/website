@@ -14,6 +14,8 @@ A contrib module is **verified** only when a test has enabled it on a real Drupf
 something the module itself owns: its field types are registered, its routes answer, its services
 resolve, its forms submit. The note under each module below says exactly what was checked.
 
+Two kinds of check produce a verified row. A hand-written check asserts one thing the module provides, such as a field type or a plugin. A generated check reads the module's own services, routes, libraries and config files from the installed copy, then asserts each one: every declared service registers and instantiates, every route and library resolves, and none of them existed before the module was enabled. The note under the module gives the counts and the version that ran, so a row verified on one release says nothing about another.
+
 A module that has not had that test is **untested**, even when there is every reason to expect it
 works. :pitch[Nothing is marked verified from reading code or from a similar module passing.]
 

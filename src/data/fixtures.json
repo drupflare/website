@@ -1,11 +1,11 @@
 {
-	"generated": "2026-11-01",
+	"generated": "2026-11-02",
 	"modules": [
 		{
 			"name": "access_unpublished",
 			"package": "drupal/access_unpublished",
-			"state": "tested",
-			"verified": null,
+			"state": "verified",
+			"verified": "Enabled against a real site; `access_token` and its two services appeared, none of it before. An unpublished node answered an anonymous visitor 403 with no token and 200 with its `auHash` token, and a wrong token 403. The visitor after the tokened one got 200 as well, which is how this found a runtime defect, not a module bug. `TokenGetter` keeps the token on a service that lives as long as the interpreter, and `RequestResetter` now clears it, so the same sequence answers 403. Not asserted. Token expiry, the settings form, or any role other than anonymous.",
 			"shipping": false,
 			"custom": false,
 			"link": "https://www.drupal.org/project/access_unpublished",
@@ -1037,8 +1037,8 @@
 		{
 			"name": "contact_storage",
 			"package": "drupal/contact_storage",
-			"state": "tested",
-			"verified": null,
+			"state": "verified",
+			"verified": "Enabled against a real site, with the contact module it depends on; the `contact_message` table and `contact_storage.settings` appeared, none of it before. An anonymous POST to `/contact/feedback` answered a 303 and left one `contact_message` row carrying the form id, name, mail, subject and message that were sent. Not asserted. Mail delivery (the run has no transport configured, and Drupal logged the send as failed after the row was stored), the maximum-submissions limit and the messages view.",
 			"shipping": false,
 			"custom": false,
 			"link": "https://www.drupal.org/project/contact_storage",
@@ -1563,6 +1563,16 @@
 			]
 		},
 		{
+			"name": "earth-app/strata",
+			"package": "earth-app/strata",
+			"state": "verified",
+			"verified": "Enabled against a real site; its key maker and engine services, `strata.settings` and `strata.webhooks` config and seven settings routes appear and were absent before. Its own cipher seals and opens a frame under a key `KeyMaker` created, the sealed bytes differ from the plaintext, six tampered or mismatched opens are refused, and a frame sealed by native libsodium matches byte for byte. Not asserted - no store is configured, so no frame is written to one. Its `strata_sodium` status row reads Available, because `extension_loaded('sodium')` is true here, and `strata_storage` reads Local, not usable without a store.",
+			"shipping": false,
+			"custom": false,
+			"link": "https://www.drupal.org/project/earth-app/strata",
+			"runsIn": []
+		},
+		{
 			"name": "easy_breadcrumb",
 			"package": "drupal/easy_breadcrumb",
 			"state": "verified",
@@ -1645,8 +1655,8 @@
 		{
 			"name": "editoria11y",
 			"package": "drupal/editoria11y",
-			"state": "tested",
-			"verified": null,
+			"state": "verified",
+			"verified": "Enabled against a real site; `ed11y_page`, `ed11y_result` and `ed11y_action`, its API and page-signer services and nine routes appeared, none of it before. An anonymous page carried no checker. The admin's page carried its script and a signed `drupalSettings` block, and a signed report posted to `/editoria11y/api/results/report` with the session's CSRF token answered 200 and stored one `ed11y_result` row. The same report with a forged signature answered 400 and stored nothing, and an anonymous post answered 403. Not asserted. The browser checker, dismissals, the dashboard view and CSV export.",
 			"shipping": false,
 			"custom": false,
 			"link": "https://www.drupal.org/project/editoria11y",
@@ -5774,7 +5784,7 @@
 			"name": "openid_connect",
 			"package": "drupal/openid_connect",
 			"state": "verified",
-			"verified": "Enabled against a real site on both branches, one row each; `plugin.manager.openid_connect_client`, `openid_connect.claims` and `openid_connect.state_token` resolve and the `generic` client plugin is registered, none of it before. 8.x-1.6, the locked branch, adds `openid_connect.settings.generic` and three routes. 3.0.0-alpha9, which 28,700 of the module's 36,179 sites run, adds the `openid_connect_client` config entity type and thirteen routes; its row runs in a build that carries that branch. The login below was driven through that entity type, so it ran on a branch that has one and not on 8.x-1.6. Its own client then completed a login: a real authorization code from the rig Keycloak, exchanged by `OpenIDConnectClientBase::retrieveTokens()` inside the callback request and followed by its userinfo GET, after which `externalauth` wrote `openid_connect.keycloak` into `authmap` against the id_token's `sub` and opened a session for the account it created. Both outbound calls went through the Zend park, so each was performed in JavaScript while PHP was frozen mid-call. The control is the same run on the interpreter before `park_flatten()`: the deferred transport answered `is not in the fetch cache`, no row and no account.",
+			"verified": "Enabled against a real site on both branches, one row each; `plugin.manager.openid_connect_client`, `openid_connect.claims` and `openid_connect.state_token` resolve and the `generic` client plugin is registered, none of it before. 8.x-1.6, the locked branch, adds `openid_connect.settings.generic` and three routes. 3.0.0-alpha9, which 28,700 of the module's 36,179 sites run, adds the `openid_connect_client` config entity type and thirteen routes; its row runs in a build that carries that branch. The login below was driven through that entity type, so it ran on a branch that has one and not on 8.x-1.6. Its own client then completed a login: a real authorization code from the rig Keycloak, exchanged by `OpenIDConnectClientBase::retrieveTokens()` inside the callback request and followed by its userinfo GET, after which `externalauth` wrote `openid_connect.keycloak` into `authmap` against the id_token's `sub` and opened a session for the account it created. Both outbound calls went through the Zend park, so each was performed in JavaScript while PHP was frozen mid-call. The control is the same run on the interpreter before `park_flatten()`: the deferred transport answered `is not in the fetch cache`, no row and no account. The same run then logged that account out through Drupal's `/user/logout` route with the session cookie the login issued. Before the logout that cookie authenticated (`/user` redirected to `/user/2`, one `sessions` row); the module answered with a redirect to Keycloak's end_session endpoint carrying the id_token as `id_token_hint`; afterwards the account was anonymous, the `sessions` row was gone and `/user` redirected to the login page. Keycloak's own session answered `prompt=none` with a code before the end_session call and `login_required` after it. With the logout request removed the run fails at the end_session assertion.",
 			"shipping": false,
 			"custom": false,
 			"link": "https://www.drupal.org/project/openid_connect",
@@ -6010,8 +6020,8 @@
 		{
 			"name": "password_policy",
 			"package": "drupal/password_policy",
-			"state": "tested",
-			"verified": null,
+			"state": "verified",
+			"verified": "Enabled against a real site; its validator and validation manager services, `password_policy.settings` and nine routes appeared, none of it before. With `password_policy_length` enabled, a policy requiring 12 characters made the module's validator reject `short1` with `Password length must be at least 12 characters.` and accept a 24-character passphrase. Not asserted. The user form validation, expiry, history and the other constraint submodules.",
 			"shipping": false,
 			"custom": false,
 			"link": "https://www.drupal.org/project/password_policy",
@@ -6687,8 +6697,8 @@
 		{
 			"name": "seckit",
 			"package": "drupal/seckit",
-			"state": "tested",
-			"verified": null,
+			"state": "verified",
+			"verified": "Enabled against a real site; its subscriber, `seckit.settings` and two routes appeared, none of it before. With a policy configured, an anonymous page carried `Content-Security-Policy`, `Strict-Transport-Security` and `Referrer-Policy`, none of which it sent before, and `X-Frame-Options` moved from core's SAMEORIGIN to DENY. A POST with a foreign `Origin` answered 403 `Access denied` and the same POST with the site's own origin answered 200. Not asserted. The report-uri endpoint, the JavaScript clickjacking guard and `Expect-CT`.",
 			"shipping": false,
 			"custom": false,
 			"link": "https://www.drupal.org/project/seckit",
@@ -6818,8 +6828,8 @@
 		{
 			"name": "simplesamlphp_auth",
 			"package": "drupal/simplesamlphp_auth",
-			"state": "untested",
-			"verified": null,
+			"state": "verified",
+			"verified": "Enabled against a real site on 4.1.0 with simplesamlphp 2.5.3.1, saml2 6.2.4 and phpmailer 7.1.1; `simplesamlphp_auth.manager`, its two admin and login routes and `simplesamlphp_auth.settings` appear after the enable and none of them before. `e2e/saml.spec.ts` then drives a real SP-initiated login and logout against Keycloak 26.8.1 with the store named above. `/saml_login` redirects to the realm with an AuthnRequest, the realm signs the user in and answers a signed SAMLResponse, the ACS accepts it, the module creates the account and its `authmap` row against the NameID (`simplesamlphp_auth`, `saml-rig`, mail and name from the mapped attributes) and `/user` answers as that account. A request with no cookie afterwards is anonymous. Drupal's logout then ends the session, the `sessions` row is gone, the cookie no longer authenticates and the provider's session is ended. An assertion whose NameID was altered after signing, the same assertion delivered twice and an ACS call with no SAMLResponse each leave the visitor anonymous and write no `authmap` row. A site supplies only SimpleSAMLphp's own configuration directory (loaded with `Configuration::setConfigDir()` from a small module of its own), its IdP metadata and the one `store.type` line; the run's `fixtures/ssp-rig` is exactly that and nothing else. drupflare supplies the rest. The `/simplesaml/module.php` endpoints are answered from the request event, SimpleSAMLphp's `exit` is turned off through its own constant and its raw `Location` header becomes the response, its session is saved explicitly because it does that from a `header_register_callback` that never fires here, and its SAML2 container is installed. Known costs, not hidden. SimpleSAMLphp's never-returning redirect methods raise a `TypeError` that Drupal logs on every login start. The AuthnRequest is signed and the client refuses an unsigned one; assertions are encrypted with RSA-OAEP (MGF1 key transport) under a SHA-1 digest, which is the only key transport SimpleSAMLphp's legacy decrypt path unwraps. Not covered is an IdP that sends RSA-OAEP with a SHA-256 digest (Keycloak's default), which that path cannot decrypt even on native PHP. The run is on `wrangler dev` with the contrib fixture pack, so it sits outside the hermetic gate and has not run on a deployed worker.",
 			"shipping": false,
 			"custom": false,
 			"link": "https://www.drupal.org/project/simplesamlphp_auth",

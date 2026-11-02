@@ -10,16 +10,26 @@ intro: >-
 stats:
   - emoji: 💸
     value: 10,037x
-    label: cheaper to run than a three-region VPS per site
+    label: cheaper to run than a latency-matched VPS per site, across a fleet of idle sites
   - emoji: 🌍
     value: 6.35x
     label: faster than a VPS on the same continent, up to 23.09x worldwide
   - emoji: 🆓
-    value: 3.04M
-    label: views a month on Cloudflare's free plan
+    value: 13.2M
+    label: views a month on Cloudflare's free plan with the R2 page mirror, 3.04M on the one-click deploy
   - emoji: 🌱
     value: 99.99%
     label: less energy than a multi-region production deployment, modelled
+statsNote: >-
+  10,037x is 1,000 sites at 10,000 views a month each, every site asleep between requests (the free
+  plan's default), against one origin in each of three regions behind a load balancer at $58.20 a
+  site and $5.80 for the Cloudflare account. Kept warm, the paid default, the bill is $350.65 and the
+  same comparison is 166x. 13.2M is derived from Cloudflare's published limits and needs the R2 mirror,
+  a managed feature that needs an R2 bucket and a custom domain you own, with the mirror answering 77%
+  of views; the one-click deploy serves 3.04M. Both count one Worker request a view. Static assets do
+  not bill as Worker requests, which Cloudflare documents and a 198,000-request drive observed. The one
+  exception is Workers Cache, which the shipped config does not enable; with it on, a free account
+  serves about 1,500 views a day. List prices and a modelled workload, not a quote.
 repos:
   - emoji: ⛱️
     name: worker

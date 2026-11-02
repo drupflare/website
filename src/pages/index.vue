@@ -87,6 +87,12 @@
 					</p>
 				</NuxtLink>
 			</section>
+			<p
+				v-if="page.statsNote"
+				class="text-muted mt-2 px-3 text-center text-xs leading-relaxed sm:px-4 sm:text-left"
+			>
+				{{ page.statsNote }}
+			</p>
 
 			<section class="mt-24">
 				<p

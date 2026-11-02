@@ -150,7 +150,13 @@ pinned address.
 
 On the free plan, one Cloudflare account serves :pitch[3.04 million views a month] across all its
 sites, with a daily budget for re-rendering pages after content changes that comfortably covers
-small and medium sites. Quotas are shared across the account and reset at midnight UTC.
+small and medium sites. Quotas are shared across the account and reset at midnight UTC. With an R2
+bucket and a custom domain you own, the page mirror lifts that to a derived 13.2 million views a
+month. The mirror also caps the re-render budget at 33,333 pages a day, down from 50,916. A site that
+re-renders fewer pages than that is unaffected. Both figures count one Worker request
+a view. Static assets do not bill as Worker requests, which Cloudflare documents and a 198,000-request
+drive observed. The one exception is Workers Cache, which the shipped config does not enable; with it
+on, a free account serves about 1,500 views a day.
 
 The $5 Workers Paid plan raises those limits and keeps sites warm, so visitors rarely wait for a
 cold start. After upgrading, set `PLAN` to `paid` in `wrangler.jsonc` and redeploy. `PLAN` is not
@@ -174,14 +180,17 @@ override it. Three more levers, all on while spool is on, turn off its page chan
 `preload="none"` to video tags, and `SPOOL_EMBEDS` swaps YouTube and Vimeo players for a facade
 until someone clicks. Each new visitor costs the Worker about two extra requests, so a site whose
 visitors usually leave after one page can end up with more requests, not fewer. The
-[impact report](https://docs.drupflare.com/impact.html) has the measurements and the break-even.
+[spool energy report](https://docs.drupflare.com/impact/energy/views.html#what-spool-adds) has the measurements and the break-even.
 
 ## ✉️ 7. Mail, Sign-On and Redis
 
 - **Mail:** `/setup/mail` onboards a sending domain. The `smtp` module is verified if you already
   have a mail provider.
 - **Single sign-on:** `/setup/oidc` sets the OpenID Connect issuer and client id. The
-  `openid_connect` module completes logins through its own client.
+  `openid_connect` module is verified enabled on 8.x-1.6 and on 3.0.0-alpha9. A login through its
+  own client against a Keycloak test server was driven on the 3.x branch, and the 8.x-1.6 login
+  has not been driven. The `cas` and `samlauth` modules are verified on the services, routes and libraries they
+  declare. No login against a real CAS or SAML provider has been driven.
 - **Redis:** store the connection string as a secret with `bunx wrangler secret put REDIS_URL`, as
   `redis://user:pass@host:6379/0` or `rediss://` for TLS. :pitch[The site's own SQLite is still the faster cache]; Redis is there for setups that already depend on it.
 

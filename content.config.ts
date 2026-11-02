@@ -25,6 +25,7 @@ export default defineContentConfig({
 				stats: z
 					.array(z.object({ emoji: z.string(), value: z.string(), label: z.string() }))
 					.default([]),
+				statsNote: z.string().optional(),
 				repos: z.array(item).default([]),
 				coming: z.array(item).default([])
 			})

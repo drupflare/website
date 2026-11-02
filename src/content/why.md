@@ -8,12 +8,13 @@ intro: >-
   nearest to them. Almost everything below follows from that.
 ---
 
-::claim{emoji="💸" figure="10,037x" title="Cheaper to Run"}
+::::claim{emoji="💸" figure="10,037x" title="Cheaper to Run"}
 Across a fleet, a Drupflare site costs about **0.6 cents a month** in infrastructure. A VPS that answers visitors from nearby needs a server in each of three regions behind a load balancer, which is **$58.20 a month** per site. For 1,000 sites with 10,000 views each, that is **$58,200 a month** against **$5.80** for Drupflare, a **10,037x difference** before anyone has written a line of code. Against Pantheon Basic, the same thousand sites would be $41,667 a month, a :pitch[7,186x difference].
 
 On your own Cloudflare account there is no per-site fee at all. The free plan covers **3.04 million
-views a month**, shared across every site you run. Past that, the $5 Workers Paid plan carries a
-thousand sites of 10,000 views each for :pitch[$5.80 a month].
+views a month** on the one-click deploy and up to :pitch[13.2 million] with the R2 page mirror, shared
+across every site you run. Past that, the $5 Workers Paid plan carries a thousand sites of 10,000
+views each for :pitch[$5.80 a month].
 
 | 1,000 Sites, 10,000 Views Each | Per Month |
 | ------------------------------ | --------- |
@@ -22,7 +23,22 @@ thousand sites of 10,000 views each for :pitch[$5.80 a month].
 | Three-region VPS per site      | $58,200   |
 | Pantheon Basic                 | $41,667   |
 
+::fine-print
+The 10,037x and the $5.80 are the sleeping-fleet ceiling: every site asleep between requests, which
+is the free plan's default and `SITE_WARM=0` on paid. The paid plan keeps sites warm by default, and
+a thousand kept-warm sites cost $350.65 a month. The same comparison is then 166x against the
+three-region VPS, 29.9x against one small VPS and 118.8x against Pantheon Basic. The three-region
+VPS is one origin in each of three regions behind a $15 load balancer. All are list prices for a
+modelled workload at 10,000 views a site, and the VPS side leaves out labour, a CDN and the
+replication a multi-region origin needs. The 13.2 million is derived from Cloudflare's published
+limits. It needs the R2 mirror, a managed feature that needs an R2 bucket and a custom domain you own,
+and the mirror answers 77% of views. The one-click deploy serves 3.04 million. Both count one Worker
+request a view. Static assets do not bill as Worker requests: Cloudflare documents that, and a
+198,000-request drive invoked no Worker. The one exception is Workers Cache, which the shipped config
+does not enable; with it on, a free account serves about 1,500 views a day.
 ::
+
+::::
 
 ::claim{emoji="🌍" figure="6.35x" title="Faster on the Same Continent"}
 A VPS answers from one region. Drupflare answers from the Cloudflare location nearest each visitor.
@@ -104,11 +120,11 @@ It costs the server about 5 ms of CPU to decorate a page, and each new visitor a
 (measured, derived). Whether that lowers a site's request count depends on how many pages a visitor
 reads: at half their views answered locally, spool breaks even at four views per visitor
 (derived, modelled), and a short visit costs the Worker more requests, not fewer. Spool is on for
-paid sites and off for free ones, and the [impact report](https://docs.drupflare.com/impact.html)
+paid sites and off for free ones, and the [energy report](https://docs.drupflare.com/impact/energy/views.html#what-spool-adds)
 shows the rows behind each figure and where they do not move.
 ::
 
-::claim{emoji="🧩" figure="65+" title="Contrib Modules Verified"}
+::claim{emoji="🧩" figure="85+" title="Contrib Modules Verified"}
 This is Drupal 11 on PHP 8.5, with every extension Drupal needs. Webform, Paragraphs, Search API,
 Metatag, Pathauto, OpenID Connect, Redis and dozens more are :pitch[verified by enabling them on a live site]
 and checking what they do, and the list grows every release. The [fixtures page](/fixtures) lists
@@ -145,7 +161,7 @@ Speed figures are :pitch[measured on deployed Cloudflare Workers] and against ng
 the same Drupal tree and database. Cost, energy, carbon and water are derived from those measurements
 and from published prices and grid factors. The best case is the headline; the method, the ranges and
 the cases where a VPS wins are in the
-[impact report](https://docs.drupflare.com/impact.html), the
+[impact report](https://docs.drupflare.com/impact/index.html), the
 [technical report](https://docs.drupflare.com/technical-report.html) and the
 [README](https://github.com/drupflare/worker#readme).
 

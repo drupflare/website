@@ -35,7 +35,7 @@ interpreter are patched through Drupflare releases, which is a separate and slow
 ::claim{emoji="⏪" figure="30" title="Days of Point-in-Time Recovery"}
 A deployed site is a SQLite-backed Durable Object, and :pitch[it can be restored to any point in the
 past 30 days], with an undo bookmark for the restore. An export dump leaves the platform for the
-case where the object itself is gone. [Recovery](https://docs.drupflare.com/recovery.html) says
+case where the object itself is gone. [Recovery](https://docs.drupflare.com/operating/recovery.html) says
 which of the four primitives answers which failure.
 ::
 
@@ -43,7 +43,7 @@ which of the four primitives answers which failure.
 
 Each row is an attack that needs something a Drupflare site does not contain. The full map has all
 24 rows, with advisories, dates and sources, on the
-[security page of the docs](https://docs.drupflare.com/security.html).
+[security page of the docs](https://docs.drupflare.com/security/index.html).
 
 | Attack                                         | Needs                                                                           | On Drupflare                                                                 |
 | ---------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -61,7 +61,7 @@ The interpreter has a short extension list: `soap`, `phar`, `intl`, `gd`, `opens
 
 ## 🔎 Where the Evidence Comes From
 
-Every claim in the [docs security page](https://docs.drupflare.com/security.html) is tagged as read
+Every claim in the [docs security page](https://docs.drupflare.com/security/index.html) is tagged as read
 from a source, measured by a named test or command, or inferred from the architecture, and every row
 closes to one of three verdicts: removed, contained or open. A claim that could not be established
 counts as open. The sources are Cloudflare's security documentation, the PHP and Drupal advisories
@@ -71,7 +71,7 @@ application bugs and shared platform risk, so a reviewer can weigh both sides.
 ## 🔐 What Version 1.0.4 Adds
 
 These close routes a foothold in PHP could use to stay in a site or reach past it. The docs rate 19
-classes before and after the work: 4 move from open to removed, 12 to contained, and 3 stay open.
+classes before and after the work: 4 move from open to removed, 13 to contained, and 2 stay open.
 Each row below names the control, and the docs give the measurement and what is left over.
 
 | Route                            | Control                                                                                         |
@@ -87,12 +87,13 @@ Each row below names the control, and the docs give the measurement and what is 
 | A private address reached        | The outbound guard refuses alternate spellings, and a tenant cannot switch it off               |
 | Framing a page                   | A Content-Security-Policy baseline, in report-only mode by default on paid sites                |
 | A swapped Composer archive       | drupal.org archives are checked against their published digests before they install             |
-| PHP2Shell                        | The interpreter is rebuilt at PHP 8.5.12, which carries the fix                                 |
+| PHP2Shell                        | The interpreter was rebuilt at PHP 8.5.12 on 2026-10-23, which carries the fix                  |
 
-Three rows stay open. A Drupal admin can remove the Content-Security-Policy baseline through the
-`RESPONSE_HEADERS` setting. Some ownership keys, such as the git remotes and the claim record, still
-sit in SQL that a foothold can reach. A planted row on a read replica lane is not checked. Packagist
-installs are not digest-verified either, and the docs list that as a residual of the Composer row.
+Two rows stay open. A Drupal admin can remove the Content-Security-Policy baseline through the
+`RESPONSE_HEADERS` setting, and a planted row on a read replica lane is not checked. Ownership keys,
+including the git remotes and the claim record, sit in sealed storage that the site's SQL cannot read.
+One residual sits on a row marked contained: Packagist installs are not digest-verified, and the docs
+list that as a residual of the Composer row.
 
 To report a vulnerability, use the private reporting link in the
 [security policy](https://github.com/drupflare/worker/security/policy) and not a public issue.

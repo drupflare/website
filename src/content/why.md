@@ -33,8 +33,7 @@ modelled workload at 10,000 views a site, and the VPS side leaves out labour, a 
 replication a multi-region origin needs. The 13.2 million is derived from Cloudflare's published
 limits. It needs the R2 mirror, a managed feature that needs an R2 bucket and a custom domain you own,
 and the mirror answers 77% of views. The one-click deploy serves 3.04 million. Both count one Worker
-request a view. Static assets do not bill as Worker requests: Cloudflare documents that, and a
-198,000-request drive invoked no Worker. The one exception is Workers Cache, which the shipped config
+request a view. Static assets do not bill as Worker requests. The one exception is Workers Cache, which the shipped config
 does not enable; with it on, a free account serves about 1,500 views a day.
 ::
 

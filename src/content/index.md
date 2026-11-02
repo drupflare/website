@@ -27,8 +27,7 @@ statsNote: >-
   same comparison is 166x. 13.2M is derived from Cloudflare's published limits and needs the R2 mirror,
   a managed feature that needs an R2 bucket and a custom domain you own, with the mirror answering 77%
   of views; the one-click deploy serves 3.04M. Both count one Worker request a view. Static assets do
-  not bill as Worker requests, which Cloudflare documents and a 198,000-request drive observed. The one
-  exception is Workers Cache, which the shipped config does not enable; with it on, a free account
+  not bill as Worker requests. The one exception is Workers Cache, which the shipped config does not enable; with it on, a free account
   serves about 1,500 views a day. List prices and a modelled workload, not a quote.
 repos:
   - emoji: ⛱️

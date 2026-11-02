@@ -154,8 +154,7 @@ small and medium sites. Quotas are shared across the account and reset at midnig
 bucket and a custom domain you own, the page mirror lifts that to a derived 13.2 million views a
 month. The mirror also caps the re-render budget at 33,333 pages a day, down from 50,916. A site that
 re-renders fewer pages than that is unaffected. Both figures count one Worker request
-a view. Static assets do not bill as Worker requests, which Cloudflare documents and a 198,000-request
-drive observed. The one exception is Workers Cache, which the shipped config does not enable; with it
+a view. Static assets do not bill as Worker requests. The one exception is Workers Cache, which the shipped config does not enable; with it
 on, a free account serves about 1,500 views a day.
 
 The $5 Workers Paid plan raises those limits and keeps sites warm, so visitors rarely wait for a

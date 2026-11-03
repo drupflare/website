@@ -92,6 +92,27 @@
 				class="text-muted mt-2 px-3 text-center text-xs leading-relaxed sm:px-4 sm:text-left"
 			>
 				{{ page.statsNote }}
+				<UModal
+					v-if="page.statsDetail"
+					title="How We Calculate These"
+					description="The assumptions behind the four figures above."
+				>
+					<button
+						type="button"
+						class="text-primary cursor-pointer underline underline-offset-2"
+					>
+						See how
+					</button>
+					<template #body>
+						<p
+							v-for="paragraph in page.statsDetail.split('\n\n')"
+							:key="paragraph"
+							class="text-muted mb-4 text-sm leading-relaxed last:mb-0"
+						>
+							{{ paragraph }}
+						</p>
+					</template>
+				</UModal>
 			</p>
 
 			<section class="mt-24">

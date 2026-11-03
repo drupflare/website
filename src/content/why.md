@@ -24,17 +24,18 @@ views each for :pitch[$5.80 a month].
 | Pantheon Basic                 | $41,667   |
 
 ::fine-print
-The 10,037x and the $5.80 are the sleeping-fleet ceiling: every site asleep between requests, which
-is the free plan's default and `SITE_WARM=0` on paid. The paid plan keeps sites warm by default, and
-a thousand kept-warm sites cost $350.65 a month. The same comparison is then 166x against the
-three-region VPS, 29.9x against one small VPS and 118.8x against Pantheon Basic. The three-region
-VPS is one origin in each of three regions behind a $15 load balancer. All are list prices for a
-modelled workload at 10,000 views a site, and the VPS side leaves out labour, a CDN and the
-replication a multi-region origin needs. The 13.2 million is derived from Cloudflare's published
-limits. It needs the R2 mirror, a managed feature that needs an R2 bucket and a custom domain you own,
-and the mirror answers 77% of views. The one-click deploy serves 3.04 million. Both count one Worker
-request a view. Static assets do not bill as Worker requests. The one exception is Workers Cache, which the shipped config
-does not enable; with it on, a free account serves about 1,500 views a day.
+The 10,037x and the $5.80 are the ceiling, with every site asleep between requests. That is the free
+plan's default, and `SITE_WARM=0` on paid. The paid plan keeps sites warm by default, and a thousand
+kept-warm sites cost $350.65 a month: 166x against the three-region VPS, 29.9x against one small VPS
+and 118.8x against Pantheon Basic. The three-region VPS is one origin in each of three regions behind
+a $15 load balancer. All of it is list prices for a modelled workload, and the VPS side leaves out
+labour, a CDN and the replication a multi-region origin needs.
+
+The 13.2 million is derived from Cloudflare's published limits. It needs the R2 mirror, which needs
+an R2 bucket and a custom domain you own, and the mirror answers 77% of views. The one-click deploy
+serves 3.04 million. Both count one Worker request a view. Static assets don't bill as Worker
+requests; the one exception is Workers Cache, which the shipped config leaves off (with it on, a
+free account serves about 1,500 views a day).
 ::
 
 ::::
@@ -93,34 +94,30 @@ request. When nobody is visiting, it holds no compute at all.
 
 Against three regions with a high-availability pair in each, sized for peak, that is **99.99% less
 energy** (modelled): 390 kWh a year for the servers against :pitch[under 0.1 kWh] for Drupflare at a million
-views a month, logged-in visitors included. In total, that is 21,355x less energy at a million views
-a month and :pitch[up to 742,503x less energy] at 10,000, where the same servers spread their idle draw over
-far fewer visitors. Each site avoids about **150 kg of CO2e** and **1.9 kL of water** a year (derived). A
-logged-in editor's admin page takes :pitch[a third less energy] per view (measured).
-
-Those figures stop at the data centre. On the visitor's side, a repeat view answered by spool uses
-0.53 J on a desktop processor against 1.29 J without it (measured), and the two are kept apart
-because one is a measured package reading and the other a model of server CPU time.
+views a month, logged-in visitors included. At 10,000 views a month the gap widens to
+:pitch[742,503x], because the same servers spread their idle draw over far fewer visitors. Each site
+avoids about **150 kg of CO2e** and **1.9 kL of water** a year (derived), and a logged-in editor's
+admin page takes :pitch[a third less energy] per view (measured).
 
 The fleet comparison is smaller and still large: for a thousand sites of 10,000 views each, **99.97%
 less energy** than consolidated shared hosting behind a CDN, with :pitch[701 kg of CO2] avoided a
-year on the average US grid and :pitch[8,989 litres of water] (derived).
+year on the average US grid and :pitch[8,989 litres of water] (derived). These figures stop at the
+data centre; the visitor's side is the spool claim below, measured separately.
 ::
 
 ::claim{emoji="📱" figure="0" title="Requests on a Repeat View"}
 Drupflare ships a small service worker, spool, that keeps a copy of the pages a visitor has seen and
 answers their repeat views on the device. On two deployed sites that differed only in spool, :pitch[48 of 48
 repeat views made no network request], against one to six without it (measured). A repeat view used
-**0.53 J** on a desktop processor against 1.29 J (measured), and a first view of a page with an image,
-a video and an embedded player used 12.9 J against 32.8 J, almost all of it saved by swapping the
-embed for a click-to-load facade (measured, one synthetic page, a desktop and not a phone).
+**0.53 J** on a desktop processor against 1.29 J (measured). A first view of a page with an image, a
+video and an embedded player used 12.9 J against 32.8 J, almost all of it saved by swapping the embed
+for a click-to-load facade (measured on one synthetic page, on a desktop and not a phone).
 
-It costs the server about 5 ms of CPU to decorate a page, and each new visitor adds about two requests
-(measured, derived). Whether that lowers a site's request count depends on how many pages a visitor
-reads: at half their views answered locally, spool breaks even at four views per visitor
-(derived, modelled), and a short visit costs the Worker more requests, not fewer. Spool is on for
-paid sites and off for free ones, and the [energy report](https://docs.drupflare.com/impact/energy/views.html#what-spool-adds)
-shows the rows behind each figure and where they do not move.
+Spool costs the server about 5 ms of CPU per page and adds about two requests per new visitor. It
+only pays off for visitors who read several pages (it breaks even at four views per visitor), so it
+is on for paid sites and off for free ones (measured, derived, modelled). The
+[energy report](https://docs.drupflare.com/impact/energy/views.html#what-spool-adds) shows the rows
+behind each figure and where they don't move.
 ::
 
 ::claim{emoji="🧩" figure="85+" title="Contrib Modules Verified"}

@@ -20,15 +20,22 @@ stats:
   - emoji: 🌱
     value: 99.99%
     label: less energy than a multi-region production deployment, modelled
-statsNote: >-
-  10,037x is 1,000 sites at 10,000 views a month each, every site asleep between requests (the free
-  plan's default), against one origin in each of three regions behind a load balancer at $58.20 a
-  site and $5.80 for the Cloudflare account. Kept warm, the paid default, the bill is $350.65 and the
-  same comparison is 166x. 13.2M is derived from Cloudflare's published limits and needs the R2 mirror,
-  a managed feature that needs an R2 bucket and a custom domain you own, with the mirror answering 77%
-  of views; the one-click deploy serves 3.04M. Both count one Worker request a view. Static assets do
-  not bill as Worker requests. The one exception is Workers Cache, which the shipped config does not enable; with it on, a free account
-  serves about 1,500 views a day. List prices and a modelled workload, not a quote.
+statsNote: List prices and a modelled workload of 1,000 sites at 10,000 views a month. Not a quote.
+statsDetail: |-
+  10,037x compares 1,000 sites at 10,000 views a month each, asleep between requests (the free
+  plan's default), with one origin in each of three regions behind a load balancer at $58.20 a site,
+  against $5.80 for the whole Cloudflare account. Kept warm, the paid default, the bill is $350.65
+  and the comparison is 166x.
+
+  13.2M views a month is derived from Cloudflare's published limits. It needs the R2 page mirror,
+  which needs an R2 bucket and a custom domain you own, and the mirror answers 77% of views. The
+  one-click deploy serves 3.04M. Both count one Worker request a view.
+
+  Static assets don't bill as Worker requests. The one exception is Workers Cache, which the shipped
+  config leaves off; with it on, a free account serves about 1,500 views a day.
+
+  99.99% less energy is modelled against a multi-region production deployment. Everything here is
+  list prices and a modelled workload, not a quote, and the docs show the working.
 repos:
   - emoji: ⛱️
     name: worker
@@ -83,7 +90,7 @@ coming:
     when: Later
 ---
 
-We will run your sites for you: upgrades, backups, a dashboard, and a person to call when something
+We'll run your sites for you: upgrades, backups, a dashboard and a person to call when something
 breaks. :pitch[Your site stays ordinary Drupal the whole time], so you can take it with you whenever you
 like.
 

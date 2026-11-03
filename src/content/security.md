@@ -61,39 +61,37 @@ The interpreter has a short extension list: `soap`, `phar`, `intl`, `gd`, `opens
 
 ## 🔎 Where the Evidence Comes From
 
-Every claim in the [docs security page](https://docs.drupflare.com/security/index.html) is tagged as read
-from a source, measured by a named test or command, or inferred from the architecture, and every row
-closes to one of three verdicts: removed, contained or open. A claim that could not be established
-counts as open. The sources are Cloudflare's security documentation, the PHP and Drupal advisories
-and NVD records. The docs page also covers what the architecture leaves in place, such as
-application bugs and shared platform risk, so a reviewer can weigh both sides.
+Every claim on the [security page of the docs](https://docs.drupflare.com/security/index.html) says how
+we know it: read from a source, measured by a named test, or inferred from the architecture. Every
+row ends as removed, contained or open, and a claim we could not establish counts as open. The sources
+are Cloudflare's security documentation, the PHP and Drupal advisories and NVD records. The docs also
+cover what the architecture leaves in place, such as application bugs and shared platform risk, so a
+reviewer can weigh both sides.
 
-## 🔐 What Version 1.0.4 Adds
+## 🔐 Hardened Past the Sandbox
 
-These close routes a foothold in PHP could use to stay in a site or reach past it. The docs rate 19
-classes before and after the work: 4 move from open to removed, 13 to contained, and 2 stay open.
-Each row below names the control, and the docs give the measurement and what is left over.
+The sandbox stops most attacks before they start. The rest of the hardening assumes an attacker
+already has a foothold in PHP and closes the ways to dig in or reach further. We rate 19 attack
+classes before and after: 4 move from open to removed, 13 to contained, and 2 stay open.
 
-| Route                            | Control                                                                                         |
-| -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Reading the owner token from SQL | Only its SHA-256 is kept, in storage the SQL bridge cannot read, and recovery rotates the token |
-| A planted module file            | Each file is checked against a sealed SHA-256 record when it is first opened on a claimed site  |
-| A planted interpreter heap image | A sealed SHA-256 root is verified before any byte is restored, or the site boots from the pack  |
-| Owner actions leaving no trace   | A hash-chained log of owner calls that `drangler audit --verify` recomputes                     |
-| A page stored for one visitor    | A page whose response varies by `Accept`, `Origin` or `User-Agent` is not stored                |
-| Security headers a module sets   | Eleven allow-listed headers are stored with the page and replayed on every cache tier           |
-| PHP opening a raw socket         | The interpreter glue no longer exposes the socket calls. A node test built three, now none      |
-| PHP calling a JavaScript global  | The vrzno path is closed. A node test recorded three calls before and none after                |
-| A private address reached        | The outbound guard refuses alternate spellings, and a tenant cannot switch it off               |
-| Framing a page                   | A Content-Security-Policy baseline, in report-only mode by default on paid sites                |
-| A swapped Composer archive       | drupal.org archives are checked against their published digests before they install             |
-| PHP2Shell                        | The interpreter was rebuilt at PHP 8.5.12 on 2026-10-23, which carries the fix                  |
+- **Your owner token can't be read from the database.** Only its SHA-256 is kept, in storage SQL
+  can't reach, and recovery rotates the token.
+- **Planted code gets caught.** Each module file and the interpreter's saved memory image are checked
+  against sealed SHA-256 records before they run. A mismatch boots the site from the pack instead.
+- **Owner actions leave a trail.** Every call is written to a hash-chained log that
+  `drangler audit --verify` recomputes.
+- **Pages don't leak between visitors.** A page whose response varies by `Accept`, `Origin` or
+  `User-Agent` is never stored, and the security headers a module sets are replayed on every cache tier.
+- **PHP stays inside the box.** It can't open a raw socket or call a JavaScript global, and the
+  outbound guard refuses private addresses in every spelling. A tenant can't switch it off.
+- **Installs are checked.** drupal.org archives are verified against their published digests before
+  they install, and a Content-Security-Policy baseline guards against framing (report-only by default
+  on paid sites).
+- **PHP2Shell is patched.** The interpreter runs PHP 8.5.12, which carries the fix.
 
-Two rows stay open. A Drupal admin can remove the Content-Security-Policy baseline through the
-`RESPONSE_HEADERS` setting, and a planted row on a read replica lane is not checked. Ownership keys,
-including the git remotes and the claim record, sit in sealed storage that the site's SQL cannot read.
-One residual sits on a row marked contained: Packagist installs are not digest-verified, and the docs
-list that as a residual of the Composer row.
+Three things aren't covered yet, and the docs list them: a Drupal admin can remove the
+Content-Security-Policy baseline through the `RESPONSE_HEADERS` setting, a planted row on a read
+replica lane isn't checked, and Packagist installs aren't digest-verified.
 
 To report a vulnerability, use the private reporting link in the
 [security policy](https://github.com/drupflare/worker/security/policy) and not a public issue.

@@ -35,8 +35,9 @@ Each capability is recorded as it happened: running normally, running through a 
 running in a reduced form with the reason written down, or not supported. A codebase is marked
 **verified** only when every capability passed on its pinned commit in a local `wrangler dev`, and
 **deployed** when they also passed on a real Worker deployed to a Cloudflare account. Until a lane has run, it is
-listed as **pending**, not assumed. A codebase whose Drupal core does not accept Drupal 11 is listed as **needs
-upgrade**: drangler plans its move to 11, and the lanes run it once it is there.
+listed as **pending**, not assumed. A codebase whose Drupal core does not accept Drupal 11 runs through the
+fixture lane with anachron, the legacy compatibility layer, and is scored the same way. One that has no such
+run is listed as **needs upgrade**: drangler plans its move to 11.
 
 drangler's own test suite also drives two of these codebases through `drangler modify` against a running site in its e2e lane: `simple_oauth_21` installs its registry dependency, uploads and enables,
 and `entity_reference_integrity`, whose own routing file stops the enable, is reported as refused

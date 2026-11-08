@@ -35,7 +35,8 @@
 			<p class="text-muted mt-2 text-sm">
 				<span class="text-highlighted font-semibold">{{ testedModules }}</span> modules tested,
 				including {{ testedContrib }} contrib; {{ verifiedModules }} verified, {{ untestedModules }}
-				untested. Tested means verified, or enabled in a codebase that passed every check.
+				untested. Tested means verified, or part of a codebase the lanes tried, whether or not it
+				worked.
 			</p>
 			<div
 				v-show="showModules"
@@ -160,11 +161,11 @@
 									</template>
 								</template>
 								<template v-else-if="m.status === 'tested'"
-									>Enabled on a verified codebase's finished site. It has no enable-and-assert run
-									of its own.</template
+									>Part of a codebase the lanes tried, whether or not that codebase worked. It has
+									no enable-and-assert run of its own.</template
 								>
 								<template v-else>No enable-and-assert run yet.</template>
-								<template v-if="m.runsIn.length"> Runs in {{ m.runsIn.join(', ') }}.</template>
+								<template v-if="m.runsIn.length"> Tried in {{ m.runsIn.join(', ') }}.</template>
 							</p>
 						</details>
 					</li>
@@ -253,8 +254,10 @@
 						>.
 					</li>
 					<li>
-						<span class="text-highlighted font-medium">Needs Upgrade to 11</span>: a codebase still
-						on Drupal 10 or earlier is listed but not driven.
+						<span class="text-highlighted font-medium">Legacy codebases</span>: a codebase written
+						for Drupal 10 or earlier runs with anachron, the legacy compatibility layer, and its
+						badge counts the capabilities that passed (Unsupported when none did). One that has not
+						been run that way is labelled Needs Upgrade to 11 and is not driven.
 					</li>
 				</ul>
 			</div>
@@ -317,6 +320,13 @@
 											<p v-else-if="f.state === 'verified'">
 												Passed in a local <code>wrangler dev</code>. Not yet run on a deployed
 												Worker.
+											</p>
+											<p v-if="f.anachron">
+												Run with anachron, which loads code written for an older core on Drupal 11.
+											</p>
+											<p v-if="f.baseOnly">
+												None of this codebase's modules were enabled in the run, so these results
+												describe the base site.
 											</p>
 											<p v-if="f.tested.length">
 												<span class="text-highlighted font-semibold">Passed:</span>

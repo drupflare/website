@@ -68,6 +68,11 @@ const resultsPath = join(WORKER, 'docs', 'compatibility.json');
 const results: Results | null = existsSync(resultsPath)
 	? JSON.parse(readFileSync(resultsPath, 'utf8'))
 	: null;
+// the same corpus run with anachron loaded, kept apart so the verified record is not touched
+const anachronPath = join(WORKER, 'docs', 'compatibility-anachron.json');
+const anachronResults: Results | null = existsSync(anachronPath)
+	? JSON.parse(readFileSync(anachronPath, 'utf8'))
+	: null;
 
 const modules = Object.entries(census.modules)
 	.map(([pkg, m]) => ({
@@ -122,6 +127,11 @@ const PLAIN: [RegExp, (m: RegExpMatchArray) => string][] = [
 		}
 	],
 	[
+		/^native install of project (\S+)/,
+		(m) =>
+			`The ${m[1]} project's own installer failed in the test rig, before anything reached Drupflare`
+	],
+	[
 		/^native install of profile (\S+)/,
 		(m) =>
 			`The ${m[1]} distribution's own installer failed in the test rig, before anything reached Drupflare`
@@ -160,20 +170,35 @@ const missingOf = (rows: [string, { state: string; note?: string }][]) => {
 	}
 	return [...groups].map(([why, caps]) => ({ caps, reason: why }));
 };
+// the run that tried each codebase on its pinned commit, whatever it found
+const triedRuns = new Map<string, NonNullable<Results['repos'][string]>>();
 const fixtures = (corpus?.repos ?? []).map((r) => {
-	const run = results?.repos[r.id];
+	const base = results?.repos[r.id];
 	// a result for an older commit describes a different codebase, so it does not count
-	const entries = run && run.sha === r.sha ? Object.entries(run.rows) : [];
+	const own = base && base.sha === r.sha ? Object.entries(base.rows) : [];
+	// the lane records a core that does not accept Drupal 11 as unsupported on every row, naming it
+	const refusedCore =
+		own.length > 0 && own.every(([, row]) => row.note?.startsWith('needs upgrade:'));
+	// such a codebase is judged by its anachron run when one exists for the same commit
+	const withAnachron = anachronResults?.repos[r.id];
+	const viaAnachron =
+		refusedCore &&
+		withAnachron !== undefined &&
+		withAnachron.sha === r.sha &&
+		Object.keys(withAnachron.rows).length > 0;
+	const run = viaAnachron ? withAnachron : base;
+	const entries = viaAnachron ? Object.entries(withAnachron.rows) : own;
 	const recorded = entries.map(([, row]) => row);
 	const rows = recorded.map((row) => row.state);
-	// the lane records a core that does not accept Drupal 11 as unsupported on every row, naming it
-	const upgrade =
-		recorded.length > 0 && recorded.every((row) => row.note?.startsWith('needs upgrade:'));
+	const upgrade = refusedCore && !viaAnachron;
+	if (run && entries.length > 0 && !upgrade) triedRuns.set(r.id, run);
+	// a run that enabled none of the codebase's modules describes the base site, not the codebase
+	const baseOnly = viaAnachron && /\b0\/0 modules enabled/.test(run?.rows['install']?.note ?? '');
 	// the lane's first version refused a profile distribution outright, so no capability ran on Drupflare
 	const notRun =
 		recorded.length > 0 &&
 		recorded.every((row) =>
-			/^(?:blocked by install: )?(?:install profile \S+ needs a fresh Drupal install|native install of profile)/.test(
+			/^(?:blocked by install: )?(?:install profile \S+ needs a fresh Drupal install|native install of (?:profile|project))/.test(
 				row.note ?? ''
 			)
 		);
@@ -201,6 +226,8 @@ const fixtures = (corpus?.repos ?? []).map((r) => {
 		missing: missingOf(entries),
 		deployedDate: deployed ? deployedRun!.date : null,
 		deployedPlan: deployed ? deployedRun!.plan : null,
+		anachron: viaAnachron,
+		baseOnly,
 		state:
 			rows.length === 0 || notRun
 				? 'pending'
@@ -224,8 +251,9 @@ const ranIn = (key: string, fixture: string, make: () => Module) => {
 	byPackage.set(key, m);
 	if (!m.runsIn.includes(fixture)) m.runsIn.push(fixture);
 };
-for (const f of fixtures.filter((x) => x.state === 'verified' || x.state === 'deployed')) {
-	const run = results?.repos[f.id];
+// a codebase the lanes tried credits its modules whether or not it worked
+for (const f of fixtures.filter((x) => triedRuns.has(x.id))) {
+	const run = triedRuns.get(f.id);
 	const enabled = new Set(run?.enabled ?? []);
 	for (const m of modules) if (enabled.has(m.name)) ranIn(m.package, f.name, () => m);
 	for (const pkg of run?.packages ?? []) {

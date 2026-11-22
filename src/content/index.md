@@ -15,7 +15,7 @@ stats:
     value: 6.35x
     label: faster than a VPS on the same continent, up to 23.09x worldwide
   - emoji: 🆓
-    value: 13.2M
+    value: 13.3M
     label: views a month on Cloudflare's free plan with the R2 page mirror, 3.04M on the one-click deploy
   - emoji: 🌱
     value: 99.99%
@@ -27,9 +27,11 @@ statsDetail: |-
   against $5.80 for the whole Cloudflare account. Kept warm, the paid default, the bill is $350.65
   and the comparison is 166x.
 
-  13.2M views a month is derived from Cloudflare's published limits. It needs the R2 page mirror,
-  which needs an R2 bucket and a custom domain you own, and the mirror answers 77% of views. The
-  one-click deploy serves 3.04M. Both count one Worker request a view.
+  13.3M views a month is derived from Cloudflare's published limits, with spool, the on-device
+  replica, at the visit lengths public data gives for six kinds of site (13.2M without it). It needs
+  the R2 page mirror, which needs an R2 bucket and a custom domain you own, and the mirror answers
+  77% of views. The one-click deploy serves 3.04M, the floor, which spool never lowers. Both count
+  one Worker request a view.
 
   Static assets don't bill as Worker requests. The one exception is Workers Cache, which the shipped
   config leaves off; with it on, a free account serves about 1,500 views a day.

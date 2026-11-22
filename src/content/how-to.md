@@ -151,7 +151,7 @@ pinned address.
 On the free plan, one Cloudflare account serves :pitch[3.04 million views a month] across all its
 sites, with a daily budget for re-rendering pages after content changes that comfortably covers
 small and medium sites. Quotas are shared across the account and reset at midnight UTC. With an R2
-bucket and a custom domain you own, the page mirror lifts that to a derived 13.2 million views a
+bucket and a custom domain you own, the page mirror lifts that to a derived 13.3 million views a
 month. The mirror also caps the re-render budget at 33,333 pages a day, down from 50,916. A site that
 re-renders fewer pages than that is unaffected. Both figures count one Worker request
 a view. Static assets do not bill as Worker requests. The one exception is Workers Cache, which the shipped config does not enable; with it
@@ -172,13 +172,15 @@ curl -X PUT "https://my-site.example/settings" \
 
 A `GET` on `/settings` lists every lever with the value in force and where it came from.
 
-Spool, the small service worker that answers repeat views on the visitor's own device, follows the
-plan: on for paid sites, off for free ones. Set `SPOOL` to `1` or `0` in `wrangler.jsonc` to
-override it. Three more levers, all on while spool is on, turn off its page changes one by one:
-`SPOOL_IMAGES` converts images to WebP for browsers that accept it, `SPOOL_VIDEO` adds
-`preload="none"` to video tags, and `SPOOL_EMBEDS` swaps YouTube and Vimeo players for a facade
-until someone clicks. Each new visitor costs the Worker about two extra requests, so a site whose
-visitors usually leave after one page can end up with more requests, not fewer. The
+Spool, the small service worker that answers repeat views on the visitor's own device, is on for
+every plan, free included. Set `SPOOL` to `0` in `wrangler.jsonc` to turn it off. Four more levers
+shape it: `SPOOL_EXCLUDE` lists path prefixes it leaves alone, `SPOOL_IMAGES` converts images to
+WebP for browsers that accept it, `SPOOL_VIDEO` adds `preload="none"` to video tags, and
+`SPOOL_EMBEDS` swaps YouTube and Vimeo players for a facade until someone clicks. A visitor never
+costs the Worker more requests than without spool, and a visitor who reads several pages costs far
+fewer. A site whose visitors usually leave after one page gains nothing and pays up to 5 ms of CPU
+on each page. Requests with a cookie or an `Authorization` header are never answered from the
+device. The
 [spool energy report](https://docs.drupflare.com/impact/energy/views.html#what-spool-adds) has the measurements and the break-even.
 
 ## ✉️ 7. Mail, Sign-On and Redis

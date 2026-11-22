@@ -12,7 +12,7 @@ intro: >-
 Across a fleet, a Drupflare site costs about **0.6 cents a month** in infrastructure. A VPS that answers visitors from nearby needs a server in each of three regions behind a load balancer, which is **$58.20 a month** per site. For 1,000 sites with 10,000 views each, that is **$58,200 a month** against **$5.80** for Drupflare, a **10,037x difference** before anyone has written a line of code. Against Pantheon Basic, the same thousand sites would be $41,667 a month, a :pitch[7,186x difference].
 
 On your own Cloudflare account there is no per-site fee at all. The free plan covers **3.04 million
-views a month** on the one-click deploy and up to :pitch[13.2 million] with the R2 page mirror, shared
+views a month** on the one-click deploy and up to :pitch[13.3 million] with the R2 page mirror, shared
 across every site you run. Past that, the $5 Workers Paid plan carries a thousand sites of 10,000
 views each for :pitch[$5.80 a month].
 
@@ -31,7 +31,8 @@ and 118.8x against Pantheon Basic. The three-region VPS is one origin in each of
 a $15 load balancer. All of it is list prices for a modelled workload, and the VPS side leaves out
 labour, a CDN and the replication a multi-region origin needs.
 
-The 13.2 million is derived from Cloudflare's published limits. It needs the R2 mirror, which needs
+The 13.3 million is derived from Cloudflare's published limits with spool at the visit lengths that
+public data gives for six kinds of site (13.2 million without it). It needs the R2 mirror, which needs
 an R2 bucket and a custom domain you own, and the mirror answers 77% of views. The one-click deploy
 serves 3.04 million. Both count one Worker request a view. Static assets don't bill as Worker
 requests; the one exception is Workers Cache, which the shipped config leaves off (with it on, a
@@ -107,15 +108,20 @@ data centre; the visitor's side is the spool claim below, measured separately.
 
 ::claim{emoji="📱" figure="0" title="Requests on a Repeat View"}
 Drupflare ships a small service worker, spool, that keeps a copy of the pages a visitor has seen and
-answers their repeat views on the device. On two deployed sites that differed only in spool, :pitch[48 of 48
-repeat views made no network request], against one to six without it (measured). A repeat view used
-**0.53 J** on a desktop processor against 1.29 J (measured). A first view of a page with an image, a
-video and an embedded player used 12.9 J against 32.8 J, almost all of it saved by swapping the embed
-for a click-to-load facade (measured on one synthetic page, on a desktop and not a phone).
+answers their repeat views on the device. On a deployed site, a visit of 121 views reached the server
+:pitch[12 times instead of 122], a 90% cut, and the reload and the repeat visit that followed reached it
+**0 times** (measured). A visitor who clicked through 2,000 pages reached the server 12 times and
+the device answered the rest. A page answered on the device started arriving in :pitch[1.8 ms] where
+the network took 41.9 ms, :pitch[23x sooner], and the whole click finished 3.4x faster (measured on
+a deployed site, one desktop). A repeat view used **0.53 J** on a desktop processor against 1.29 J
+(measured). A first view of a page with an image, a video and an embedded player used 12.9 J against
+32.8 J, almost all of it saved by swapping the embed for a click-to-load facade (measured on one
+synthetic page, on a desktop and not a phone).
 
-Spool costs the server about 5 ms of CPU per page and adds about two requests per new visitor. It
-only pays off for visitors who read several pages (it breaks even at four views per visitor), so it
-is on for paid sites and off for free ones (measured, derived, modelled). The
+Spool is on for every plan, free included. A visitor never costs the server more requests than
+without it, so the free plan always carries its 3.04 million views a month, and visitors who read on
+carry it further. Spool adds up to 5 ms of server CPU to a page, and one-page visitors gain nothing
+from it. The
 [energy report](https://docs.drupflare.com/impact/energy/views.html#what-spool-adds) shows the rows
 behind each figure and where they don't move.
 ::

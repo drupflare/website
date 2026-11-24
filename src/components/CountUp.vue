@@ -13,21 +13,14 @@ const props = defineProps<{ value: string }>();
 const parts = computed(() => props.value.match(/^([^\d]*)([\d,.]+)(.*)$/));
 const target = computed(() => Number(parts.value?.[2]?.replace(/,/g, '') ?? 0));
 const decimals = computed(() => parts.value?.[2]?.split('.')[1]?.length ?? 0);
-const grouped = computed(() => parts.value?.[2]?.includes(',') ?? false);
 
 const format = (n: number) => {
 	if (!parts.value) return props.value;
-	const num = grouped.value
-		? n.toLocaleString('en-US', {
-				minimumFractionDigits: decimals.value,
-				maximumFractionDigits: decimals.value
-			})
-		: n.toFixed(decimals.value);
-	return `${parts.value[1]}${num}${parts.value[3]}`;
+	return `${parts.value[1]}${formatCount(n, decimals.value)}${parts.value[3]}`;
 };
 
 // the server renders the final value, so no-JS readers and crawlers see the real figure
-const shown = ref(props.value);
+const shown = ref(format(target.value));
 const el = ref<HTMLElement | null>(null);
 
 onMounted(() => {

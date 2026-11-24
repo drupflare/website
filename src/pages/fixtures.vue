@@ -99,7 +99,7 @@
 										@click.stop
 										>{{ m.name }}</a
 									>
-									<span class="mt-1 flex flex-wrap gap-1">
+									<span class="mt-1 flex flex-wrap items-center gap-1">
 										<DrupalBadge v-if="m.cms === 'drupal'" />
 										<AnachronBadge v-if="m.anachron" />
 										<UBadge
@@ -202,81 +202,122 @@
 					critical path (install, container build, rendering, or form submit) and amber when every
 					missing one is something a production site can still be viable without.
 				</p>
-				<p class="mt-3">
-					Incompatible with editorial workloads, viable for a site that is not one. An editorial
-					site is one where anyone creates, edits or deletes content through Drupal in production,
-					however rarely; a site whose content only changes through a deploy (drangler, config or a
-					migration) is not one.
-				</p>
-				<ul class="mt-1 list-disc space-y-1 pl-5">
-					<li
-						v-for="c in editorial"
-						:key="c.key"
-					>
-						<span class="text-highlighted font-medium">{{ c.label }}</span
-						>: {{ c.why }}
-					</li>
-				</ul>
-				<p class="mt-3">Viable without on any site:</p>
-				<ul class="mt-1 list-disc space-y-1 pl-5">
-					<li
-						v-for="c in optional"
-						:key="c.key"
-					>
-						<span class="text-highlighted font-medium">{{ c.label }}</span
-						>: {{ c.why }}
-					</li>
-				</ul>
-			</div>
-			<div class="text-muted mt-4 max-w-3xl text-sm leading-relaxed">
-				<p>How each codebase reaches the site, on a local Drupflare worker:</p>
-				<ul class="mt-1 list-disc space-y-1 pl-5">
-					<li>
-						<span class="text-highlighted font-medium">Modules and module suites</span>: the
-						packages they require come from drupal.org or Packagist through the
-						<code class="bg-muted rounded px-1 font-mono text-xs">/install</code> route that
-						<code class="bg-muted rounded px-1 font-mono text-xs">drangler modify require</code>
-						uses, the repository's own modules go up with
-						<code class="bg-muted rounded px-1 font-mono text-xs">drangler modify upload</code>, and
-						Drupal's installer turns them on.
-					</li>
-					<li>
-						<span class="text-highlighted font-medium">Distributions and projects</span>: installed
-						natively in Docker the way a server would run them (composer, then
-						<code class="bg-muted rounded px-1 font-mono text-xs">drush site:install</code> with the
-						project's own recipes or install options). The database moves in with
-						<code class="bg-muted rounded px-1 font-mono text-xs">drangler migrate install</code>,
-						the site is claimed, the packages in its lock file come from the registry, and the
-						profile and custom code go up with
-						<code class="bg-muted rounded px-1 font-mono text-xs">drangler modify upload</code>.
-						This is the bring-your-own-site path in the
-						<NuxtLink
-							to="/how-to#bring-your-own-site"
-							class="text-highlighted underline underline-offset-4"
-							>How-To</NuxtLink
-						>.
-					</li>
-					<li>
-						<span class="text-highlighted font-medium">Legacy codebases</span>: a codebase written
-						for Drupal 10 or earlier runs with anachron, the legacy compatibility layer, and its
-						badge counts the capabilities that passed (Unsupported when none did). One that has not
-						been run that way is labelled Needs Upgrade to 11 and is not driven.
-					</li>
-				</ul>
 			</div>
 			<UButton
 				color="neutral"
 				variant="ghost"
 				size="lg"
-				class="mt-4 min-h-11"
-				:aria-expanded="showFixtures"
-				aria-controls="fixture-list"
-				:trailing-icon="showFixtures ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-				:label="showFixtures ? 'Hide List' : 'Show List'"
-				@click="showFixtures = !showFixtures"
+				class="mt-2 min-h-11"
+				trailing-icon="i-lucide-arrow-up-right"
+				label="Read More"
+				@click="showMore = true"
 			/>
+			<UModal
+				v-model:open="showMore"
+				title="How Codebases Are Scored"
+				description="Which missing capabilities matter, and how each codebase reaches the site."
+				:ui="{ content: 'max-w-2xl' }"
+			>
+				<template #body>
+					<div class="text-muted text-sm leading-relaxed">
+						<p>
+							Incompatible with editorial workloads, viable for a site that is not one. An editorial
+							site is one where anyone creates, edits or deletes content through Drupal in
+							production, however rarely; a site whose content only changes through a deploy
+							(drangler, config or a migration) is not one.
+						</p>
+						<ul class="mt-1 list-disc space-y-1 pl-5">
+							<li
+								v-for="c in editorial"
+								:key="c.key"
+							>
+								<span class="text-highlighted font-medium">{{ c.label }}</span
+								>: {{ c.why }}
+							</li>
+						</ul>
+						<p class="mt-3">Viable without on any site:</p>
+						<ul class="mt-1 list-disc space-y-1 pl-5">
+							<li
+								v-for="c in optional"
+								:key="c.key"
+							>
+								<span class="text-highlighted font-medium">{{ c.label }}</span
+								>: {{ c.why }}
+							</li>
+						</ul>
+					</div>
+					<div class="text-muted mt-4 max-w-3xl text-sm leading-relaxed">
+						<p>How each codebase reaches the site, on a local Drupflare worker:</p>
+						<ul class="mt-1 list-disc space-y-1 pl-5">
+							<li>
+								<span class="text-highlighted font-medium">Modules and module suites</span>: the
+								packages they require come from drupal.org or Packagist through the
+								<code class="bg-muted rounded px-1 font-mono text-xs">/install</code> route that
+								<code class="bg-muted rounded px-1 font-mono text-xs">drangler modify require</code>
+								uses, the repository's own modules go up with
+								<code class="bg-muted rounded px-1 font-mono text-xs">drangler modify upload</code>,
+								and Drupal's installer turns them on.
+							</li>
+							<li>
+								<span class="text-highlighted font-medium">Distributions and projects</span>:
+								installed natively in Docker the way a server would run them (composer, then
+								<code class="bg-muted rounded px-1 font-mono text-xs">drush site:install</code> with
+								the project's own recipes or install options). The database moves in with
+								<code class="bg-muted rounded px-1 font-mono text-xs">drangler migrate install</code
+								>, the site is claimed, the packages in its lock file come from the registry, and
+								the profile and custom code go up with
+								<code class="bg-muted rounded px-1 font-mono text-xs">drangler modify upload</code>.
+								This is the bring-your-own-site path in the
+								<NuxtLink
+									to="/how-to#bring-your-own-site"
+									class="text-highlighted underline underline-offset-4"
+									>How-To</NuxtLink
+								>.
+							</li>
+							<li>
+								<span class="text-highlighted font-medium">Legacy codebases</span>: a codebase
+								written for Drupal 10 or earlier runs with anachron, the legacy compatibility layer,
+								and its badge counts the capabilities that passed (Unsupported when none did). One
+								that has not been run that way is labelled Needs Upgrade to 11 and is not driven.
+							</li>
+						</ul>
+					</div>
+				</template>
+			</UModal>
+			<div class="mt-5 flex flex-col gap-3">
+				<UInput
+					v-model="fixtureQuery"
+					icon="i-lucide-search"
+					size="xl"
+					placeholder="Search by name, shape, core or commit"
+					aria-label="Search Codebases"
+					class="w-full"
+				/>
+				<div
+					class="flex flex-wrap gap-2"
+					role="group"
+					aria-label="Filter Codebases"
+				>
+					<UButton
+						v-for="f in fixtureFilters"
+						:key="f.key"
+						:color="fixtureFilter === f.key ? 'primary' : 'neutral'"
+						:variant="fixtureFilter === f.key ? 'solid' : 'outline'"
+						size="lg"
+						class="min-h-11"
+						:aria-pressed="fixtureFilter === f.key"
+						:label="`${f.label} ${formatCount(f.count)}`"
+						@click="fixtureFilter = f.key"
+					/>
+				</div>
+				<p
+					class="text-muted text-sm"
+					aria-live="polite"
+				>
+					{{ formatCount(shownFixtures) }} of {{ formatCount(fixtures.length) }} codebases
+				</p>
+			</div>
 			<div
-				v-show="showFixtures"
 				id="fixture-list"
 				class="border-default mt-3 overflow-x-auto rounded-lg border"
 			>
@@ -329,82 +370,91 @@
 									>
 								</td>
 								<td class="px-4 py-3">
-									<UTooltip
-										:disabled="f.tested.length + f.missing.length === 0 && !f.credential"
-										:content="{ side: 'left' }"
-										:ui="{ content: 'h-auto max-w-80 py-2' }"
-									>
-										<UBadge
-											:color="statusColor(f)"
-											variant="subtle"
-											size="sm"
-											tabindex="0"
-											:leading-icon="f.certified ? 'i-lucide-award' : undefined"
-											:ui="f.certified ? { base: 'bg-certified/10 text-certified' } : undefined"
-											class="cursor-help"
-											>{{ statusLabel(f) }}</UBadge
+									<div class="flex flex-wrap items-center gap-1.5">
+										<UTooltip
+											:disabled="
+												f.tested.length + f.missing.length === 0 && !f.credential && !f.certified
+											"
+											:content="{ side: 'left' }"
+											:ui="{ content: 'h-auto max-w-80 py-2' }"
 										>
-										<template #content>
-											<div class="space-y-1.5 text-xs leading-snug whitespace-normal">
-												<p v-if="f.state === 'deployed'">
-													Passed on a real Worker deployed to a Cloudflare account, after passing in
-													a local <code>wrangler dev</code>.
-												</p>
-												<p v-else-if="f.state === 'verified'">
-													Passed in a local <code>wrangler dev</code>. Not yet run on a deployed
-													Worker.
-												</p>
-												<p v-if="f.certified">
-													Certified. Three deployed runs in a row passed every capability on the
-													pinned commit, on the {{ f.run?.plan }} plan. It holds while three of the
-													newest four runs passed and the newest one did; with no passing run it
-													expires on {{ f.run?.expires }}.
-												</p>
-												<p v-if="f.anachron">
-													Run with anachron, which loads code written for an older core on Drupal
-													11.
-												</p>
-												<p v-if="f.baseOnly">
-													None of this codebase's modules were enabled in the run, so these results
-													describe the base site.
-												</p>
-												<p v-if="f.tested.length">
-													<span class="text-highlighted font-semibold">Passed:</span>
-													{{ f.tested.join(', ') }}
-												</p>
-												<p
-													v-for="m in f.missing"
-													:key="m.reason"
-												>
-													<span class="text-highlighted font-semibold"
-														>{{ m.caps.length === f.total ? 'All' : m.caps.join(', ') }}:</span
+											<UBadge
+												:color="statusColor(f)"
+												variant="subtle"
+												size="sm"
+												tabindex="0"
+												:leading-icon="f.certified ? 'i-lucide-award' : undefined"
+												:ui="f.certified ? { base: 'bg-certified/10 text-certified' } : undefined"
+												class="cursor-help"
+												>{{ statusLabel(f) }}</UBadge
+											>
+											<template #content>
+												<div class="space-y-1.5 text-xs leading-snug whitespace-normal">
+													<p v-if="f.state === 'deployed'">
+														Passed on a real Worker deployed to a Cloudflare account, after passing
+														in a local <code>wrangler dev</code>.
+													</p>
+													<p v-else-if="f.state === 'verified'">
+														Passed in a local <code>wrangler dev</code>. Not yet run on a deployed
+														Worker.
+													</p>
+													<p v-if="f.certified">
+														Certified. Three deployed runs in a row passed every capability on the
+														pinned commit, on the {{ f.run?.plan }} plan. It holds while three of
+														the newest four runs passed and the newest one did; with no passing run
+														it expires on {{ f.run?.expires }}. Last run
+														{{ formatRunTime(f.run?.at, f.run?.date ?? '')
+														}}{{ runSource(f.run) ? `, ${runSource(f.run)}` : '' }}. Every fixture
+														is rerun within {{ f.interval }} days.
+													</p>
+													<p v-if="f.anachron">
+														Run with anachron, which loads code written for an older core on Drupal
+														11.
+													</p>
+													<p v-if="f.baseOnly">
+														None of this codebase's modules were enabled in the run, so these
+														results describe the base site.
+													</p>
+													<p v-if="f.tested.length">
+														<span class="text-highlighted font-semibold">Passed:</span>
+														{{ f.tested.join(', ') }}
+													</p>
+													<p
+														v-for="m in f.missing"
+														:key="m.reason"
 													>
-													{{ m.reason }}
-												</p>
-												<p v-if="f.credential">
-													<span class="text-highlighted font-semibold">*</span>
-													Needs read access to {{ f.credential }}. A site owner with that access
-													passes it to <code>drangler build --project</code> in
-													<code>auth.json</code>, which is the supported route. The test rig has no
-													such credential, so it was not run here.
-												</p>
-											</div>
-										</template>
-									</UTooltip>
-									<AnachronBadge
-										v-if="f.anachron"
-										class="ml-1"
-									/>
-									<p
-										v-if="f.certified"
-										class="text-muted mt-1 text-xs"
-										:title="f.run?.at"
-									>
-										Last run {{ formatRunTime(f.run?.at, f.run?.date ?? '')
-										}}{{ runSource(f.run) ? `, ${runSource(f.run)}` : '' }}. Certified until
-										{{ f.run?.expires }} unless another run passes; every fixture is rerun within
-										{{ f.interval }} days.
-									</p>
+														<span class="text-highlighted font-semibold"
+															>{{ m.caps.length === f.total ? 'All' : m.caps.join(', ') }}:</span
+														>
+														{{ m.reason }}
+													</p>
+													<p v-if="f.credential">
+														<span class="text-highlighted font-semibold">*</span>
+														Needs read access to {{ f.credential }}. A site owner with that access
+														passes it to <code>drangler build --project</code> in
+														<code>auth.json</code>, which is the supported route. The test rig has
+														no such credential, so it was not run here.
+													</p>
+												</div>
+											</template>
+										</UTooltip>
+										<UTooltip
+											v-if="f.certified && f.run?.plan === 'paid'"
+											text="Certified on the paid plan. A pass on paid does not count toward free."
+											:content="{ side: 'top' }"
+											:ui="{ content: 'h-auto max-w-72 py-2 whitespace-normal' }"
+										>
+											<UBadge
+												color="neutral"
+												variant="outline"
+												size="sm"
+												tabindex="0"
+												class="cursor-help"
+												>Paid</UBadge
+											>
+										</UTooltip>
+										<AnachronBadge v-if="f.anachron" />
+									</div>
 									<p
 										v-if="f.failing.length"
 										class="text-error mt-1 text-xs"
@@ -417,6 +467,12 @@
 					</tbody>
 				</table>
 			</div>
+			<p
+				v-if="!shownFixtures"
+				class="text-muted mt-6 text-center text-sm"
+			>
+				No codebases match.
+			</p>
 		</section>
 	</div>
 </template>
@@ -487,7 +543,9 @@ const moduleFilters = [
 	{ key: 'custom', label: 'Custom', count: modules.filter((m) => m.custom).length }
 ];
 const showModules = ref(false);
-const showFixtures = ref(false);
+const showMore = ref(false);
+const fixtureQuery = ref('');
+const fixtureFilter = ref('all');
 const filter = ref('all');
 const query = ref('');
 const shownModules = computed(() => {
@@ -566,17 +624,40 @@ const groupLabels: Record<string, string> = {
 	pending: 'Pending',
 	drupal7: 'Drupal 7'
 };
+const groupOf = (f: Row) =>
+	f.certified ? 'certified' : f.core.startsWith('7.') ? 'drupal7' : f.state;
+const matchesQuery = (f: Row) => {
+	const q = fixtureQuery.value.trim().toLowerCase();
+	return (
+		!q ||
+		[f.name, f.id, f.shape, f.core, f.sha, statusLabel(f)].some((v) => v.toLowerCase().includes(q))
+	);
+};
 const groups = computed(() =>
 	Object.entries(groupLabels)
 		.map(([key, label]) => ({
 			key,
 			label,
 			rows: live.value.filter(
-				(f) => (f.certified ? 'certified' : f.core.startsWith('7.') ? 'drupal7' : f.state) === key
+				(f) =>
+					groupOf(f) === key &&
+					(fixtureFilter.value === 'all' || fixtureFilter.value === key) &&
+					matchesQuery(f)
 			)
 		}))
 		.filter((g) => g.rows.length)
 );
+const shownFixtures = computed(() => groups.value.reduce((n, g) => n + g.rows.length, 0));
+const fixtureFilters = computed(() => [
+	{ key: 'all', label: 'All', count: live.value.length },
+	...Object.entries(groupLabels)
+		.map(([key, label]) => ({
+			key,
+			label,
+			count: live.value.filter((f) => groupOf(f) === key).length
+		}))
+		.filter((f) => f.count)
+]);
 const certifiedFixtures = computed(() => live.value.filter((f) => f.certified).length);
 const deployedFixtures = computed(
 	() => live.value.filter((f) => f.state === 'deployed' || f.certified).length
@@ -657,9 +738,7 @@ const statusColor = (f: Row) =>
 
 const statusLabel = (f: Row) =>
 	f.certified
-		? f.run?.plan
-			? `Certified on ${f.run.plan.toLowerCase()}`
-			: 'Certified'
+		? 'Certified'
 		: f.state === 'deployed'
 			? 'Deployed'
 			: f.state === 'verified'

@@ -31,16 +31,32 @@
 	--color-leaf-800: oklch(42.5% 0.095 146.7);
 	--color-leaf-900: oklch(33% 0.066 146.7);
 	--color-leaf-950: oklch(22.5% 0.039 146.7);
+
+	/* certified gold; darker and less chroma than the warning yellow, so the two badges read apart */
+	--color-gold-50: oklch(98.2% 0.015 90);
+	--color-gold-100: oklch(95.5% 0.04 88);
+	--color-gold-200: oklch(91% 0.075 86);
+	--color-gold-300: oklch(84.5% 0.11 84);
+	--color-gold-400: oklch(77% 0.125 82);
+	--color-gold-500: oklch(70% 0.125 80);
+	--color-gold-600: oklch(62% 0.115 78);
+	--color-gold-700: oklch(54% 0.095 76);
+	--color-gold-800: oklch(45% 0.075 74);
+	--color-gold-900: oklch(38% 0.06 72);
+	--color-gold-950: oklch(26% 0.04 70);
+	--color-certified: var(--ui-certified);
 }
 
 /* white text needs 700 on light; black text reads on 500 in dark */
 :root {
 	--ui-primary: var(--ui-color-primary-700);
+	--ui-certified: var(--color-gold-800);
 	--ui-bg: #ffffff;
 }
 
 .dark {
 	--ui-primary: var(--ui-color-primary-500);
+	--ui-certified: var(--color-gold-300);
 	--ui-bg: #0a0a0a;
 	--ui-bg-muted: #141414;
 	--ui-bg-elevated: #1a1a1a;

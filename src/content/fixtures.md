@@ -35,7 +35,8 @@ Each capability is recorded as it happened: running normally, running through a 
 running in a reduced form with the reason written down, or not supported. A codebase is marked
 **verified** only when every capability passed on its pinned commit in a local `wrangler dev`, and
 **deployed** when they also passed on a real Worker deployed to a Cloudflare account. Until a lane has run, it is
-listed as **pending**, not assumed. A codebase whose Drupal core does not accept Drupal 11 runs through the
+listed as **pending**, not assumed. A codebase the lane ran but could not install is listed as **blocked**, with the
+cause the lane recorded. A codebase whose Drupal core does not accept Drupal 11 runs through the
 fixture lane with anachron, the legacy compatibility layer, and is scored the same way. One that has no such
 run is listed as **needs upgrade**: drangler plans its move to 11.
 
@@ -43,5 +44,8 @@ drangler's own test suite also drives two of these codebases through `drangler m
 and `entity_reference_integrity`, whose own routing file stops the enable, is reported as refused
 while the site keeps serving.
 
-The lanes are new in 1.0.3 and the first runs are landing now. The table below is regenerated from
-the lane results, so a row changes only when a run on its pinned commit records something.
+A codebase is in one of three states. **Verified** means the fixture lane passed all thirteen capabilities in a local `wrangler dev`. **Deployed** means the same run also passed on a Worker deployed to a Cloudflare account. **Certified** means three deployed runs in a row passed all thirteen capabilities on the pinned commit on one plan. Certified names the cheapest plan the fixture passes on, and a pass on paid does not count toward free. A certified codebase keeps the badge while at least three of its newest four runs passed and the newest one passed, so a single failed run does not remove it. It drops back to Deployed when that stops holding, or when fourteen days pass with no passing run. A run that failed to deploy counts as a failed run. A run the account had no budget to make is not recorded. A certified codebase shows when its last run happened, in UTC, and whether a schedule or a person started it. The status comes from a file the certification job publishes to the CDN; the site reads it at build time and again in the browser, and keeps its last snapshot when the file cannot be read.
+
+Each module in the list carries labels. **Tested** means a lane enabled or delivered it. **Anachron** means it only ran through anachron, the legacy backend behavior. **Drupal** names the system it belongs to.
+
+The table below is regenerated from the lane results, so a row changes only when a run on its pinned commit records something.

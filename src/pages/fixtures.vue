@@ -33,10 +33,11 @@
 				/>
 			</div>
 			<p class="text-muted mt-2 text-sm">
-				<span class="text-highlighted font-semibold">{{ testedModules }}</span> modules tested,
-				including {{ testedContrib }} contrib; {{ verifiedModules }} verified, {{ untestedModules }}
-				untested. Tested means verified, or part of a codebase the lanes tried, whether or not it
-				worked.
+				<span class="text-highlighted font-semibold">{{ formatCount(testedModules) }}</span> modules
+				tested, including {{ formatCount(testedContrib) }} contrib;
+				{{ formatCount(verifiedModules) }} verified, {{ formatCount(untestedModules) }} untested.
+				Tested means verified, or part of a codebase the lanes tried, whether or not it worked.
+				{{ formatCount(anachronModules) }} ran only through anachron, the legacy backend behavior.
 			</p>
 			<div
 				v-show="showModules"
@@ -64,7 +65,7 @@
 							size="lg"
 							class="min-h-11"
 							:aria-pressed="filter === f.key"
-							:label="f.label"
+							:label="`${f.label} ${formatCount(f.count)}`"
 							@click="filter = f.key"
 						/>
 					</div>
@@ -72,7 +73,7 @@
 						class="text-muted text-sm"
 						aria-live="polite"
 					>
-						{{ shownModules.length }} of {{ modules.length }} modules
+						{{ formatCount(shownModules.length) }} of {{ formatCount(modules.length) }} modules
 					</p>
 				</div>
 				<ul class="mt-3 grid items-start gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -98,10 +99,9 @@
 										@click.stop
 										>{{ m.name }}</a
 									>
-									<span
-										v-if="m.shipping || m.custom || m.runsIn.length"
-										class="mt-1 flex flex-wrap gap-1"
-									>
+									<span class="mt-1 flex flex-wrap gap-1">
+										<DrupalBadge v-if="m.cms === 'drupal'" />
+										<AnachronBadge v-if="m.anachron" />
 										<UBadge
 											v-if="m.shipping"
 											color="neutral"
@@ -183,11 +183,14 @@
 			<div class="flex flex-wrap items-baseline justify-between gap-3">
 				<h2 class="text-highlighted text-2xl font-black">🏛️ Production Codebases</h2>
 				<p class="text-muted text-sm">
-					<span class="text-primary font-semibold">{{ verifiedFixtures }}</span> of
-					{{ fixtures.length }} verified<template v-if="deployedFixtures"
-						>, {{ deployedFixtures }} of them deployed</template
-					>, {{ partialFixtures }} partially verified,
-					{{ ranFixtures === fixtures.length ? 'all ran' : `${ranFixtures} ran` }}, snapshot
+					<span class="text-primary font-semibold">{{ formatCount(verifiedFixtures) }}</span> of
+					{{ formatCount(fixtures.length) }} verified<template v-if="deployedFixtures"
+						>, {{ formatCount(deployedFixtures) }} of them deployed</template
+					><template v-if="certifiedFixtures"
+						>, {{ formatCount(certifiedFixtures) }} of them certified</template
+					>, {{ formatCount(partialFixtures) }} partially verified,
+					{{ ranFixtures === fixtures.length ? 'all ran' : `${formatCount(ranFixtures)} ran` }},
+					snapshot
 					{{ data.generated }}
 				</p>
 			</div>
@@ -261,7 +264,22 @@
 					</li>
 				</ul>
 			</div>
-			<div class="border-default mt-6 overflow-x-auto rounded-lg border">
+			<UButton
+				color="neutral"
+				variant="ghost"
+				size="lg"
+				class="mt-4 min-h-11"
+				:aria-expanded="showFixtures"
+				aria-controls="fixture-list"
+				:trailing-icon="showFixtures ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+				:label="showFixtures ? 'Hide List' : 'Show List'"
+				@click="showFixtures = !showFixtures"
+			/>
+			<div
+				v-show="showFixtures"
+				id="fixture-list"
+				class="border-default mt-3 overflow-x-auto rounded-lg border"
+			>
 				<table class="w-full min-w-[40rem] text-sm">
 					<thead class="bg-muted text-left">
 						<tr>
@@ -273,86 +291,129 @@
 						</tr>
 					</thead>
 					<tbody class="divide-default divide-y">
-						<tr
-							v-for="f in fixtures"
-							:key="f.id"
+						<template
+							v-for="g in groups"
+							:key="g.key"
 						>
-							<td class="px-4 py-3">
-								<a
-									:href="f.repo"
-									target="_blank"
-									rel="noopener noreferrer"
-									class="text-highlighted font-medium underline-offset-4 hover:underline"
-									>{{ f.name }}</a
+							<tr class="bg-muted">
+								<th
+									colspan="5"
+									class="text-highlighted px-4 py-2 text-left text-xs font-semibold tracking-wide uppercase"
 								>
-							</td>
-							<td class="text-muted px-4 py-3 capitalize">{{ f.shape }}</td>
-							<td class="text-muted px-4 py-3 font-mono text-xs">{{ f.core }}</td>
-							<td class="px-4 py-3">
-								<a
-									:href="`${f.repo}/commit/${f.sha}`"
-									target="_blank"
-									rel="noopener noreferrer"
-									class="text-muted hover:text-primary font-mono text-xs"
-									>{{ f.sha.slice(0, 8) }}</a
-								>
-							</td>
-							<td class="px-4 py-3">
-								<UTooltip
-									:disabled="f.tested.length + f.missing.length === 0 && !f.credential"
-									:content="{ side: 'left' }"
-									:ui="{ content: 'h-auto max-w-80 py-2' }"
-								>
-									<UBadge
-										:color="statusColor(f)"
-										variant="subtle"
-										size="sm"
-										tabindex="0"
-										class="cursor-help"
-										>{{ statusLabel(f) }}</UBadge
+									{{ g.label }}
+									<span class="text-muted font-normal">{{ formatCount(g.rows.length) }}</span>
+								</th>
+							</tr>
+							<tr
+								v-for="f in g.rows"
+								:key="f.id"
+							>
+								<td class="px-4 py-3">
+									<a
+										:href="f.repo"
+										target="_blank"
+										rel="noopener noreferrer"
+										class="text-highlighted font-medium underline-offset-4 hover:underline"
+										>{{ f.name }}</a
 									>
-									<template #content>
-										<div class="space-y-1.5 text-xs leading-snug whitespace-normal">
-											<p v-if="f.state === 'deployed'">
-												Passed on a real Worker deployed to a Cloudflare account, after passing in a
-												local <code>wrangler dev</code>.
-											</p>
-											<p v-else-if="f.state === 'verified'">
-												Passed in a local <code>wrangler dev</code>. Not yet run on a deployed
-												Worker.
-											</p>
-											<p v-if="f.anachron">
-												Run with anachron, which loads code written for an older core on Drupal 11.
-											</p>
-											<p v-if="f.baseOnly">
-												None of this codebase's modules were enabled in the run, so these results
-												describe the base site.
-											</p>
-											<p v-if="f.tested.length">
-												<span class="text-highlighted font-semibold">Passed:</span>
-												{{ f.tested.join(', ') }}
-											</p>
-											<p
-												v-for="m in f.missing"
-												:key="m.reason"
-											>
-												<span class="text-highlighted font-semibold"
-													>{{ m.caps.length === f.total ? 'All' : m.caps.join(', ') }}:</span
+								</td>
+								<td class="text-muted px-4 py-3 capitalize">{{ f.shape }}</td>
+								<td class="text-muted px-4 py-3 font-mono text-xs">{{ f.core }}</td>
+								<td class="px-4 py-3">
+									<a
+										:href="`${f.repo}/commit/${f.sha}`"
+										target="_blank"
+										rel="noopener noreferrer"
+										class="text-muted hover:text-primary font-mono text-xs"
+										>{{ f.sha.slice(0, 8) }}</a
+									>
+								</td>
+								<td class="px-4 py-3">
+									<UTooltip
+										:disabled="f.tested.length + f.missing.length === 0 && !f.credential"
+										:content="{ side: 'left' }"
+										:ui="{ content: 'h-auto max-w-80 py-2' }"
+									>
+										<UBadge
+											:color="statusColor(f)"
+											variant="subtle"
+											size="sm"
+											tabindex="0"
+											:leading-icon="f.certified ? 'i-lucide-award' : undefined"
+											:ui="f.certified ? { base: 'bg-certified/10 text-certified' } : undefined"
+											class="cursor-help"
+											>{{ statusLabel(f) }}</UBadge
+										>
+										<template #content>
+											<div class="space-y-1.5 text-xs leading-snug whitespace-normal">
+												<p v-if="f.state === 'deployed'">
+													Passed on a real Worker deployed to a Cloudflare account, after passing in
+													a local <code>wrangler dev</code>.
+												</p>
+												<p v-else-if="f.state === 'verified'">
+													Passed in a local <code>wrangler dev</code>. Not yet run on a deployed
+													Worker.
+												</p>
+												<p v-if="f.certified">
+													Certified. Three deployed runs in a row passed every capability on the
+													pinned commit, on the {{ f.run?.plan }} plan. It holds while three of the
+													newest four runs passed and the newest one did; with no passing run it
+													expires on {{ f.run?.expires }}.
+												</p>
+												<p v-if="f.anachron">
+													Run with anachron, which loads code written for an older core on Drupal
+													11.
+												</p>
+												<p v-if="f.baseOnly">
+													None of this codebase's modules were enabled in the run, so these results
+													describe the base site.
+												</p>
+												<p v-if="f.tested.length">
+													<span class="text-highlighted font-semibold">Passed:</span>
+													{{ f.tested.join(', ') }}
+												</p>
+												<p
+													v-for="m in f.missing"
+													:key="m.reason"
 												>
-												{{ m.reason }}
-											</p>
-											<p v-if="f.credential">
-												<span class="text-highlighted font-semibold">*</span>
-												Needs read access to {{ f.credential }}. A site owner with that access
-												passes it to <code>drangler build --project</code> in
-												<code>auth.json</code>, which is the supported route. The test rig has no
-												such credential, so it was not run here.
-											</p>
-										</div>
-									</template>
-								</UTooltip>
-							</td>
-						</tr>
+													<span class="text-highlighted font-semibold"
+														>{{ m.caps.length === f.total ? 'All' : m.caps.join(', ') }}:</span
+													>
+													{{ m.reason }}
+												</p>
+												<p v-if="f.credential">
+													<span class="text-highlighted font-semibold">*</span>
+													Needs read access to {{ f.credential }}. A site owner with that access
+													passes it to <code>drangler build --project</code> in
+													<code>auth.json</code>, which is the supported route. The test rig has no
+													such credential, so it was not run here.
+												</p>
+											</div>
+										</template>
+									</UTooltip>
+									<AnachronBadge
+										v-if="f.anachron"
+										class="ml-1"
+									/>
+									<p
+										v-if="f.certified"
+										class="text-muted mt-1 text-xs"
+										:title="f.run?.at"
+									>
+										Last run {{ formatRunTime(f.run?.at, f.run?.date ?? '')
+										}}{{ runSource(f.run) ? `, ${runSource(f.run)}` : '' }}. Certified until
+										{{ f.run?.expires }} unless another run passes; every fixture is rerun within
+										{{ f.interval }} days.
+									</p>
+									<p
+										v-if="f.failing.length"
+										class="text-error mt-1 text-xs"
+									>
+										Failing in the latest run: {{ f.failing.join(', ') }}
+									</p>
+								</td>
+							</tr>
+						</template>
 					</tbody>
 				</table>
 			</div>
@@ -367,17 +428,21 @@ const page = await usePageContent('/fixtures');
 
 // verified, then partial (most capabilities first), needs upgrade, unsupported, pending
 const rank = (f: (typeof data.fixtures)[number]) =>
-	f.state === 'deployed'
-		? -1
-		: f.state === 'verified'
-			? 0
-			: f.state === 'partial' && f.passed > 0
-				? 1
-				: f.state === 'needs-upgrade'
-					? 2
-					: f.state === 'partial'
-						? 3
-						: 4;
+	f.state === 'certified'
+		? -2
+		: f.state === 'deployed'
+			? -1
+			: f.state === 'verified'
+				? 0
+				: f.state === 'partial' && f.passed > 0
+					? 1
+					: f.state === 'needs-upgrade'
+						? 2
+						: f.state === 'partial'
+							? 3
+							: f.state === 'blocked'
+								? 4
+								: 5;
 const fixtures = [...data.fixtures].sort((a, b) => rank(a) - rank(b) || b.passed - a.passed);
 type Status = 'verified' | 'tested' | 'untested';
 const modules = data.modules.map((m) => ({
@@ -410,15 +475,19 @@ const stateText: Record<Status, string> = {
 	tested: 'text-neutral-900 dark:text-white',
 	untested: 'text-dimmed'
 };
+const anachronModules = modules.filter((m) => m.anachron).length;
 const moduleFilters = [
-	{ key: 'all', label: 'All' },
-	{ key: 'verified', label: 'Verified' },
-	{ key: 'tested', label: 'Tested' },
-	{ key: 'untested', label: 'Untested' },
-	{ key: 'codebase', label: 'In a Codebase' },
-	{ key: 'custom', label: 'Custom' }
+	{ key: 'all', label: 'All', count: modules.length },
+	{ key: 'verified', label: 'Verified', count: verifiedModules },
+	{ key: 'tested', label: 'Tested', count: modules.filter((m) => m.status === 'tested').length },
+	{ key: 'untested', label: 'Untested', count: untestedModules },
+	{ key: 'anachron', label: 'Anachron', count: anachronModules },
+	{ key: 'drupal', label: 'Drupal', count: modules.filter((m) => m.cms === 'drupal').length },
+	{ key: 'codebase', label: 'In a Codebase', count: modules.filter((m) => m.runsIn.length).length },
+	{ key: 'custom', label: 'Custom', count: modules.filter((m) => m.custom).length }
 ];
-const showModules = ref(true);
+const showModules = ref(false);
+const showFixtures = ref(false);
 const filter = ref('all');
 const query = ref('');
 const shownModules = computed(() => {
@@ -430,14 +499,95 @@ const shownModules = computed(() => {
 					? m.runsIn.length > 0
 					: filter.value === 'custom'
 						? m.custom
-						: m.status === filter.value)) &&
+						: filter.value === 'anachron'
+							? m.anachron
+							: filter.value === 'drupal'
+								? m.cms === 'drupal'
+								: m.status === filter.value)) &&
 			(!q || m.name.toLowerCase().includes(q) || m.package.toLowerCase().includes(q))
 	);
 });
-const deployedFixtures = fixtures.filter((f) => f.state === 'deployed').length;
-const verifiedFixtures = fixtures.filter((f) => f.state === 'verified').length + deployedFixtures;
+type Entry = {
+	state: 'certified' | 'deployed' | 'none';
+	sha: string;
+	plan: string;
+	date: string;
+	expires: string;
+	at?: string;
+	source?: 'manual' | 'scheduled';
+	intervalDays?: number;
+	failing: string[];
+};
+type Row = (typeof fixtures)[number] & {
+	certified: boolean;
+	failing: string[];
+	run?: Entry;
+	interval: number;
+};
+const status = ref<{ intervalDays: number; fixtures: Record<string, Entry> } | null>(null);
+onMounted(async () => {
+	try {
+		const res = await fetch('https://cdn.drupflare.com/certified/status.json');
+		if (res.ok) status.value = await res.json();
+	} catch {
+		// the snapshot stands when the status file cannot be read
+	}
+});
+// the published file wins once it has loaded; until then the snapshot's block stands. An entry
+// applies only to the pinned commit it was run on, and only until its expiry date
+const live = computed<Row[]>(() => {
+	const today = new Date().toLocaleDateString('en-CA');
+	return fixtures.map((f) => {
+		const e = status.value
+			? status.value.fixtures?.[f.id]
+			: (f as { certification?: Entry | null }).certification;
+		const run =
+			e && e.sha?.slice(0, 10) === f.sha.slice(0, 10) && e.expires >= today ? e : undefined;
+		const state = f.state === 'certified' ? 'deployed' : f.state;
+		return {
+			...f,
+			state: run && run.state !== 'none' ? 'deployed' : state,
+			certified: run?.state === 'certified',
+			failing: run?.state === 'deployed' ? (run.failing ?? []) : [],
+			run,
+			interval: status.value?.intervalDays ?? run?.intervalDays ?? 0
+		};
+	});
+});
+const runSource = (run?: Entry) =>
+	run?.source === 'manual' ? 'run by hand' : run?.source === 'scheduled' ? 'scheduled run' : '';
+const groupLabels: Record<string, string> = {
+	certified: 'Certified',
+	deployed: 'Deployed',
+	verified: 'Verified',
+	partial: 'Partial',
+	'needs-upgrade': 'Needs Upgrade',
+	blocked: 'Blocked',
+	pending: 'Pending',
+	drupal7: 'Drupal 7'
+};
+const groups = computed(() =>
+	Object.entries(groupLabels)
+		.map(([key, label]) => ({
+			key,
+			label,
+			rows: live.value.filter(
+				(f) => (f.certified ? 'certified' : f.core.startsWith('7.') ? 'drupal7' : f.state) === key
+			)
+		}))
+		.filter((g) => g.rows.length)
+);
+const certifiedFixtures = computed(() => live.value.filter((f) => f.certified).length);
+const deployedFixtures = computed(
+	() => live.value.filter((f) => f.state === 'deployed' || f.certified).length
+);
+const verifiedFixtures = computed(
+	() => live.value.filter((f) => f.state === 'verified').length + deployedFixtures.value
+);
 const partialFixtures = fixtures.filter((f) => f.state === 'partial' && f.passed > 0).length;
-const ranFixtures = fixtures.filter((f) => f.total > 0 && f.state !== 'pending').length;
+const ranFixtures = fixtures.filter(
+	(f) => (f.total > 0 && f.state !== 'pending') || (f as { certification?: unknown }).certification
+).length;
 
 // needed by a site that edits content in production; one that does not is viable without them
 const editorial = [
@@ -486,34 +636,43 @@ const optional = [
 	}
 ];
 const optionalKeys = new Set([...editorial, ...optional].map((c) => c.key));
-const critical = (f: (typeof fixtures)[number]) =>
-	f.missing.some((m) => m.caps.some((c) => !optionalKeys.has(c)));
+const critical = (f: Row) => f.missing.some((m) => m.caps.some((c) => !optionalKeys.has(c)));
 
-const statusColor = (f: (typeof fixtures)[number]) =>
-	f.state === 'deployed'
-		? 'success'
-		: f.state === 'verified'
-			? 'primary'
-			: f.state === 'needs-upgrade'
-				? 'secondary'
-				: f.state === 'partial'
-					? f.passed === 0 || critical(f)
-						? 'error'
-						: 'warning'
-					: 'neutral';
-
-const statusLabel = (f: (typeof fixtures)[number]) =>
-	f.state === 'deployed'
-		? 'Deployed'
-		: f.state === 'verified'
-			? 'Verified'
-			: f.state === 'partial'
-				? f.passed === 0
-					? 'Unsupported'
-					: `${f.passed} of ${f.total} Capabilities`
+const statusColor = (f: Row) =>
+	f.certified
+		? 'neutral'
+		: f.state === 'deployed'
+			? 'success'
+			: f.state === 'verified'
+				? 'primary'
 				: f.state === 'needs-upgrade'
-					? 'Needs Upgrade to 11'
-					: f.credential
-						? 'Pending*'
-						: 'Pending';
+					? 'secondary'
+					: f.state === 'blocked'
+						? 'error'
+						: f.state === 'partial'
+							? f.passed === 0 || critical(f)
+								? 'error'
+								: 'warning'
+							: 'neutral';
+
+const statusLabel = (f: Row) =>
+	f.certified
+		? f.run?.plan
+			? `Certified on ${f.run.plan.toLowerCase()}`
+			: 'Certified'
+		: f.state === 'deployed'
+			? 'Deployed'
+			: f.state === 'verified'
+				? 'Verified'
+				: f.state === 'partial'
+					? f.passed === 0
+						? 'Unsupported'
+						: `${f.passed} of ${f.total} Capabilities`
+					: f.state === 'needs-upgrade'
+						? 'Needs Upgrade to 11'
+						: f.state === 'blocked'
+							? 'Blocked'
+							: f.credential
+								? 'Pending*'
+								: 'Pending';
 </script>

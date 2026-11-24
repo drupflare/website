@@ -1,11 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { applyCertification, drops, headline, loadStatus, type Snapshot } from './fixtures-lib';
 
 /**
  * Snapshots the worker's module census, fixture corpus and lane results into `src/data/fixtures.json`.
  *
  *   bun run sync:fixtures                 # reads ../worker
  *   WORKER_DIR=/path/to/worker bun run sync:fixtures
+ *   bun run sync:fixtures --status=status.json   # or CERT_STATUS_FILE; else the CDN, else the snapshot's
  *
  * The site is static and built without the worker checked out, so the snapshot is committed and this
  * script is rerun whenever the worker's census or lane results move. Nothing here infers a state: a
@@ -15,7 +17,10 @@ import { dirname, join, resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const WORKER = resolve(process.env.WORKER_DIR ?? join(ROOT, '..', 'worker'));
-const OUT = join(ROOT, 'src', 'data', 'fixtures.json');
+const argOf = (flag: string) =>
+	process.argv.find((a) => a.startsWith(`--${flag}=`))?.slice(flag.length + 3);
+const OUT = argOf('out') ?? join(ROOT, 'src', 'data', 'fixtures.json');
+const COMMITTED = join(ROOT, 'src', 'data', 'fixtures.json');
 
 type Census = { modules: Record<string, { why?: string; verified?: string; shipping?: boolean }> };
 type Corpus = {
@@ -74,15 +79,20 @@ const anachronResults: Results | null = existsSync(anachronPath)
 	? JSON.parse(readFileSync(anachronPath, 'utf8'))
 	: null;
 
+// a drupal.org project is keyed by its machine name whether a lane wrote drupal/foo or foo
+const projectKey = (name: string) => name.replace(/^drupal\//, '');
+
 const modules = Object.entries(census.modules)
 	.map(([pkg, m]) => ({
-		name: pkg.replace(/^drupal\//, ''),
+		name: projectKey(pkg),
 		package: pkg,
+		cms: 'drupal',
 		state: m.verified ? 'verified' : 'untested',
 		verified: m.verified ? sentence(m.verified) : null,
 		shipping: m.shipping ?? false,
 		custom: false,
-		link: `https://www.drupal.org/project/${pkg.replace(/^drupal\//, '')}`,
+		anachron: false,
+		link: `https://www.drupal.org/project/${projectKey(pkg)}`,
 		// the Verified codebases whose finished site enabled it, filled in below
 		runsIn: [] as string[]
 	}))
@@ -170,8 +180,9 @@ const missingOf = (rows: [string, { state: string; note?: string }][]) => {
 	}
 	return [...groups].map(([why, caps]) => ({ caps, reason: why }));
 };
-// the run that tried each codebase on its pinned commit, whatever it found
-const triedRuns = new Map<string, NonNullable<Results['repos'][string]>>();
+// every run that tried a codebase on its pinned commit, whatever it found, with the arm it ran on
+type Run = NonNullable<Results['repos'][string]>;
+const tried: { id: string; run: Run; arm: 'main' | 'anachron' }[] = [];
 const fixtures = (corpus?.repos ?? []).map((r) => {
 	const base = results?.repos[r.id];
 	// a result for an older commit describes a different codebase, so it does not count
@@ -191,7 +202,18 @@ const fixtures = (corpus?.repos ?? []).map((r) => {
 	const recorded = entries.map(([, row]) => row);
 	const rows = recorded.map((row) => row.state);
 	const upgrade = refusedCore && !viaAnachron;
-	if (run && entries.length > 0 && !upgrade) triedRuns.set(r.id, run);
+	if (run && entries.length > 0 && !upgrade) {
+		tried.push({ id: r.id, run, arm: viaAnachron ? 'anachron' : 'main' });
+	}
+	// a codebase judged on its own run can also have an anachron run at the same commit
+	if (
+		!viaAnachron &&
+		withAnachron &&
+		withAnachron.sha === r.sha &&
+		Object.keys(withAnachron.rows).length > 0
+	) {
+		tried.push({ id: r.id, run: withAnachron, arm: 'anachron' });
+	}
 	// a run that enabled none of the codebase's modules describes the base site, not the codebase
 	const baseOnly = viaAnachron && /\b0\/0 modules enabled/.test(run?.rows['install']?.note ?? '');
 	// the lane's first version refused a profile distribution outright, so no capability ran on Drupflare
@@ -228,16 +250,21 @@ const fixtures = (corpus?.repos ?? []).map((r) => {
 		deployedPlan: deployed ? deployedRun!.plan : null,
 		anachron: viaAnachron,
 		baseOnly,
+		blockedCause: notRun
+			? (recorded[0]?.note ?? '').replace(/^blocked by install: /, '').slice(0, 300)
+			: null,
 		state:
-			rows.length === 0 || notRun
+			rows.length === 0
 				? 'pending'
-				: upgrade
-					? 'needs-upgrade'
-					: rows.every((s) => passing.has(s))
-						? deployed
-							? 'deployed'
-							: 'verified'
-						: 'partial'
+				: notRun
+					? 'blocked'
+					: upgrade
+						? 'needs-upgrade'
+						: rows.every((s) => passing.has(s))
+							? deployed
+								? 'deployed'
+								: 'verified'
+							: 'partial'
 	};
 });
 
@@ -245,62 +272,99 @@ const fixtures = (corpus?.repos ?? []).map((r) => {
 // verification, so it is shown beside the state rather than changing it. A package or custom module
 // outside the census is listed as tested: it ran, and nothing asserted it on its own
 type Module = (typeof modules)[number];
-const byPackage = new Map<string, Module>(modules.map((m) => [m.package, m]));
-const ranIn = (key: string, fixture: string, make: () => Module) => {
-	const m = byPackage.get(key) ?? make();
-	byPackage.set(key, m);
+const byKey = new Map<string, Module>(
+	modules.map((m) => [m.package.startsWith('drupal/') ? projectKey(m.package) : m.package, m])
+);
+// the arms each entry ran on; a module is anachron-only when it never ran on the main arm
+const arms = new Map<string, Set<string>>();
+const ranIn = (key: string, fixture: string, arm: string, make: () => Module) => {
+	const m = byKey.get(key) ?? make();
+	byKey.set(key, m);
+	arms.set(key, (arms.get(key) ?? new Set()).add(arm));
 	if (!m.runsIn.includes(fixture)) m.runsIn.push(fixture);
 };
+const tested = (name: string, pkg: string, link: string, custom = false): Module => ({
+	name,
+	package: pkg,
+	cms: 'drupal',
+	state: 'tested',
+	verified: null,
+	shipping: false,
+	custom,
+	anachron: false,
+	link,
+	runsIn: []
+});
 // a codebase the lanes tried credits its modules whether or not it worked
-for (const f of fixtures.filter((x) => triedRuns.has(x.id))) {
-	const run = triedRuns.get(f.id);
-	const enabled = new Set(run?.enabled ?? []);
-	for (const m of modules) if (enabled.has(m.name)) ranIn(m.package, f.name, () => m);
-	for (const pkg of run?.packages ?? []) {
-		const short = pkg.startsWith('drupal/') ? pkg.slice('drupal/'.length) : null;
-		ranIn(pkg, f.name, () => ({
-			name: short ?? pkg,
-			package: pkg,
-			state: 'tested',
-			verified: null,
-			shipping: false,
-			custom: false,
-			link:
+for (const { id, run, arm } of tried) {
+	const f = fixtures.find((x) => x.id === id)!;
+	const customNames = new Set(run.custom ?? []);
+	for (const name of run.enabled ?? []) {
+		// an enabled module that the repository ships is the custom entry, not a drupal.org project
+		if (customNames.has(name)) continue;
+		const key = projectKey(name).toLowerCase();
+		ranIn(key, f.name, arm, () =>
+			tested(key, `drupal/${key}`, `https://www.drupal.org/project/${key}`)
+		);
+	}
+	for (const pkg of run.packages ?? []) {
+		const short = pkg.startsWith('drupal/') ? projectKey(pkg).toLowerCase() : null;
+		ranIn(short ?? pkg, f.name, arm, () =>
+			tested(
+				short ?? pkg,
+				pkg,
 				short === null
 					? `https://packagist.org/packages/${pkg}`
-					: `https://www.drupal.org/project/${short}`,
-			runsIn: []
-		}));
+					: `https://www.drupal.org/project/${short}`
+			)
+		);
 	}
-	for (const name of run?.custom ?? []) {
-		ranIn(`${f.name}:${name}`, f.name, () => ({
-			name: `${f.name.split('/')[0]}/${name}`,
-			package: `${f.name}:${name}`,
-			state: 'tested',
-			verified: null,
-			shipping: false,
-			custom: true,
-			link: f.repo,
-			runsIn: []
-		}));
+	for (const name of customNames) {
+		ranIn(`${f.name}:${name}`, f.name, arm, () =>
+			tested(`${f.name.split('/')[0]}/${name}`, `${f.name}:${name}`, f.repo, true)
+		);
 	}
+}
+for (const [key, m] of byKey) {
+	m.anachron =
+		m.state !== 'verified' &&
+		arms.get(key)?.has('anachron') === true &&
+		!arms.get(key)?.has('main');
 }
 modules.splice(
 	0,
 	modules.length,
-	...[...byPackage.values()].sort((a, b) => a.name.localeCompare(b.name))
+	...[...byKey.values()].sort((a, b) => a.name.localeCompare(b.name))
 );
 
-mkdirSync(dirname(OUT), { recursive: true });
-writeFileSync(
-	OUT,
-	JSON.stringify(
-		{ generated: new Date().toISOString().slice(0, 10), modules, fixtures },
-		null,
-		'\t'
-	) + '\n'
+// #region certification
+const previous: Snapshot | null = existsSync(COMMITTED)
+	? JSON.parse(readFileSync(COMMITTED, 'utf8'))
+	: null;
+const { status, from } = await loadStatus({
+	file: argOf('status') ?? process.env.CERT_STATUS_FILE
+});
+const certified = applyCertification(
+	fixtures,
+	status,
+	new Map((previous?.fixtures ?? []).map((f) => [f.id, f.certification]))
 );
+// #endregion
+
+const next = { generated: new Date().toISOString().slice(0, 10), modules, fixtures: certified };
+const fell = previous ? drops(previous, next) : [];
+if (fell.length) {
+	console.error(`a headline count would fall:\n  ${fell.join('\n  ')}`);
+	if (OUT === COMMITTED) {
+		console.error(`refusing to write ${OUT}`);
+		process.exit(1);
+	}
+}
+mkdirSync(dirname(OUT), { recursive: true });
+writeFileSync(OUT, JSON.stringify(next, null, '\t') + '\n');
+const h = headline(next);
 console.log(
-	`${modules.filter((m) => m.state === 'verified').length} verified modules, ${fixtures.length} fixtures ` +
-		`(${fixtures.filter((f) => f.state === 'verified' || f.state === 'deployed').length} verified) -> ${OUT}`
+	`${h.verifiedModules} verified modules of ${h.modules}, ${h.fixtures} fixtures ` +
+		`(${h.verifiedOrBetter} verified, ${h.deployedOrBetter} deployed, ${h.certified} certified; ` +
+		`status from ${from}) -> ${OUT}`
 );
